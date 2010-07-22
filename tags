@@ -1822,7 +1822,9 @@ dec	.\research\rix\playrix_final.Asm	/^		dec	di$/;"	d
 dec	.\research\rix\playrix_final.Asm	/^		dec	dx$/;"	d
 decay	.\research\rix\ins.h	/^      int    decay; $/;"	m	struct:__anon24
 decode	.\mkf.py	/^    def decode(self, data):$/;"	m	class:YJ1Decoder
+decodeloop	.\mkf.py	/^    def decodeloop(self):$/;"	m	class:YJ1Decoder
 decodeloop	.\research\PalTools.NET\Library\yj_1.cpp	/^word16 decodeloop()$/;"	f
+decodenumbytes	.\mkf.py	/^    def decodenumbytes():$/;"	m	class:YJ1Decoder
 decodenumbytes	.\research\PalTools.NET\Library\yj_1.cpp	/^word16 decodenumbytes()$/;"	f
 decompress	.\research\PalTools.NET\Library\compress.cpp	/^int decompress(const unsigned char *src, unsigned char *dest)$/;"	f
 default_pass	.\research\rix\DERIX.C	41;"	d	file:
@@ -1860,6 +1862,7 @@ errorno	.\research\PalTools.NET\Library\mkf.cpp	/^ERROR_NO PAL_MKF::errorno() co
 event_script	.\research\PalTools.NET\Library\item.cpp	/^const EventScript PAL_ITEM::event_script(int index) const throw(...)$/;"	f	class:PAL_ITEM
 event_script	.\research\PalTools.NET\Library\item.cpp	/^const TypedBufferGroup<EventScript> PAL_ITEM::event_script() const$/;"	f	class:PAL_ITEM
 exp	.\research\PalTools.NET\Library\library.h	/^	short exp;$/;"	m	struct:_MonsterData
+expand	.\mkf.py	/^    def expand(self):$/;"	m	class:YJ1Decoder
 expand	.\research\PalTools.NET\Library\yj_1.cpp	/^void expand()$/;"	f
 ext	.\research\MKF\CUT.C	/^char ext[MAXEXT+1];$/;"	v
 extensions	.\research\rix\Adplug\include\adplug\players.h	/^  char		*extensions;$/;"	m	class:CPlayerDesc
@@ -1978,6 +1981,7 @@ get_out	.\research\DJGPPProgs\yj1.cpp	1077;"	d	file:
 get_out	.\research\PalLibrary\src\yj1.cpp	873;"	d	file:
 get_out	.\research\PalLibrary\src\yj1.cpp	898;"	d	file:
 get_size	.\research\rix\Adplug\include\adplug\database.h	/^  virtual unsigned long get_size() { return 0; }$/;"	f	class:CPlainRecord
+get_topflag	.\mkf.py	/^    def get_topflag(self, x, y):$/;"	m	class:YJ1Decoder
 get_topflag	.\research\PalTools.NET\Library\yj_1.cpp	/^byte8 get_topflag(dword32& x,byte8& y)$/;"	f
 getauthor	.\research\rix\Adplug\include\adplug\player.h	/^	virtual std::string getauthor()		\/\/ returns song author name$/;"	f	class:CPlayer
 getdesc	.\research\rix\Adplug\include\adplug\player.h	/^	virtual std::string getdesc()		\/\/ returns song description$/;"	f	class:CPlayer
@@ -2231,6 +2235,7 @@ monster	.\research\PalTools.NET\Library\item.cpp	/^const MonsterData PAL_ITEM::m
 monster	.\research\PalTools.NET\Library\item.cpp	/^const TypedBufferGroup<MonsterData> PAL_ITEM::monster() const$/;"	f	class:PAL_ITEM
 monster	.\research\PalTools.NET\Library\library.h	/^	} monster;$/;"	m	union:_ObjectDataDos	typeref:struct:_ObjectDataDos::__anon6
 monster	.\research\PalTools.NET\Library\library.h	/^	} monster;$/;"	m	union:_ObjectDataWin	typeref:struct:_ObjectDataWin::__anon13
+move_top	.\mkf.py	/^    def move_top(self, x):$/;"	m	class:YJ1Decoder
 move_top	.\research\PalTools.NET\Library\yj_1.cpp	/^byte8 move_top(word16 &x)$/;"	f
 msg_index	.\research\PalTools.NET\Library\item.cpp	/^const TypedBufferGroup<unsigned int> PAL_ITEM::msg_index() const$/;"	f	class:PAL_ITEM
 mus_block	.\research\rix\Adplug\include\adplug\rix.h	/^  unsigned short mus_block;$/;"	m	class:CrixPlayer
@@ -2402,6 +2407,9 @@ rawlength	.\research\PalTools.NET\Library\mkf.cpp	/^int PAL_MKF_R::rawlength(int
 rc	.\research\Pal95Tools\pngimage.pas	/^  CopyProc: procedure(Src, Dest, Trans: pChar) of object;$/;"	p
 read	.\mkf.py	/^    def read(self, index):$/;"	m	class:MKFDecoder
 read	.\mkf.py	/^    def read(self, index):$/;"	m	class:SubPlace
+readByte	.\mkf.py	/^    def readByte(self, si = None):$/;"	m	class:YJ1Decoder
+readInt	.\mkf.py	/^    def readInt(self, si = None):$/;"	m	class:YJ1Decoder
+readShort	.\mkf.py	/^    def readShort(self, si = None):$/;"	m	class:YJ1Decoder
 read_own	.\research\rix\Adplug\include\adplug\database.h	/^  virtual void read_own(binistream &in) {}$/;"	f	class:CPlainRecord
 readerIndex	.\research\PalScript\src\Big5.Mono\sssbig5.cs	/^		private BinaryReader readerIndex, readerMessage;$/;"	f	class:Pal.SSS.Message	file:
 readerIndex	.\research\PalScript\src\zh_CN.Net\sss.cs	/^        private BinaryReader readerIndex, readerMessage;$/;"	f	class:Pal.SSS.Message	file:
@@ -2599,6 +2607,7 @@ traceSwitch	.\research\PalScript\src\Big5.Mono\scriptbig5.cs	/^	public static Tr
 traceSwitch	.\research\PalScript\src\zh_CN.Net\script.cs	/^    public static TraceSwitch traceSwitch = new TraceSwitch("General", "Entire Application");$/;"	f	class:ScriptTest
 traceWriter	.\research\PalScript\src\Big5.Mono\scriptbig5.cs	/^	public static TextWriterTraceListener traceWriter = new TextWriterTraceListener(System.Console.Out);$/;"	f	class:ScriptTest
 traceWriter	.\research\PalScript\src\zh_CN.Net\script.cs	/^    public static TextWriterTraceListener traceWriter = new TextWriterTraceListener(System.Console.Out);$/;"	f	class:ScriptTest
+trans_topflag_to	.\mkf.py	/^    def trans_topflag_to(self, x, y, z, n):$/;"	m	class:YJ1Decoder
 trans_topflag_to	.\research\PalTools.NET\Library\yj_1.cpp	/^dword32 trans_topflag_to(word16& x,dword32& y,byte8& z,int n)$/;"	f
 traverse_tree	.\research\DJGPPProgs\yj1.cpp	/^static inline uint32 traverse_tree(TreeNode* root, uint32 level, uint32* freq)$/;"	f	file:
 traverse_tree	.\research\DJGPPProgs\yj1.cpp	/^static inline void traverse_tree(TreeNode* root, uint32 level, uint32& nodes)$/;"	f	file:
@@ -2616,6 +2625,7 @@ unknown	.\research\PalTools.NET\Library\library.h	/^			unsigned short unknown:		
 unknown1	.\research\rix\DERIX.C	/^int unknown1 = 0;$/;"	v
 unpack	.\mkf.py	/^from struct import unpack$/;"	i
 unpack	.\research\PalTools.NET\Library\mkf.cpp	/^unsigned char *PAL_MKF::unpack(int index, int &length) const$/;"	f	class:PAL_MKF
+update	.\mkf.py	/^    def update(self, x):$/;"	m	class:YJ1Decoder
 update	.\research\rix\Adplug\include\adplug\kemuopl.h	/^  void update(short *buf, int samples)$/;"	f	class:CKemuopl
 update_crc	.\research\Pal95Tools\pngimage.pas	/^function update_crc(crc: {$IFNDEF DelphiBuilder3Less}Cardinal{$ELSE}Integer$/;"	f
 usage	.\research\MKF\CUT.C	/^void usage()$/;"	f

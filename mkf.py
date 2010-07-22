@@ -11,7 +11,6 @@ import pygame
 from singleton import singleton
 from struct import unpack
 from PIL import Image, ImageDraw
-from threading import Thread
 
 class MKFDecoder:
     '''
@@ -94,17 +93,229 @@ class YJ1Decoder:
     def __init__(self):
         self.si = 0 #source index
         self.di = 0 #dest index
+        self.first = 1
+        self.flags = 0
+        self.flagnum = 0
+        self.key_0x12 = 0
+        self.key_0x13 = 0
+        self.orgLen = 0
+        self.fileLen = 0
+        self.tableLen = 0
+        self.table = []
+        self.assist = []
+        self.keywords = [0 for i in xrange(0x14)]
+        self.data = ''
+        self.finalData = []
 
     def decode(self, data):
         # TODO YJ_1解析
+        self.si = self.di = 0 #; //记录文件位置的指针 记录解开后保存数据所在数组中的指向位置
+        self.first = 1
+        self.key_0x12 = self.key_0x13 = 0
+        self.flags = 0
+        self.flagnum = 0        
+
+        pack_length = 0
+        ext_length = 0
+        if not data:
+            return
         self.data = data
-        pass
+        tag = self.readInt()
+        print hex(tag)
+        if tag != 0x315f4a59:
+            return
+        self.orgLen = self.readInt()
+        self.fileLen = self.readInt()
+        self.finalData = [0 for i in xrange(0x10000)]
+        prev_src_pos = self.si
+        prev_dst_pos = self.di
+        blocks = self.readByte(0xC)
+        
+        self.expand()
+
+        prev_src_pos = self.si
+        self.di = prev_dst_pos
+        for i in xrange(blocks):
+            if self.first == 0:
+                prev_src_pos += pack_length
+                prev_dst_pos += ext_length
+                self.si = prev_src_pos
+                self.di = prev_dst_pos
+            first = 0
+            
+            ext_length = self.readShort()
+            pack_length = self.readShort()
+
+            if pack_length == 0:
+                pack_length = ext_length + 4
+                for j in xrange(ext_length):
+                    self.finalData[self.di] = self.data[self.si]
+                    di += 1
+                    si += 1
+                ext_length = pack_length - 4
+            else:
+                d = 0
+                for j in xrange(0x14):
+                    self.keywords[d] = self.readByte()
+                    d += 1
+                self.key_0x12 = self.keywords[0x12]
+                self.key_0x13 = self.keywords[0x13]
+                
+                self.flagnum = 0x20
+                self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffffL
+                self.analysis()
+            return ''.join([x for x in self.finalData if x != 0])
+
+    def analysis(self):
+        loop = 0
+        numbytes = 0
+        while True:
+            loop = self.decodeloop()
+            if loop == 0xffff:
+                return
+            for i in xrange(loop):
+                m = 0
+                self.update(0x10)
+                while True:
+                    m = self.trans_topflag_to(m, self.flags, self.flagnum, 1)
+                    self.flags = (self.flags << 1) & 0xffffffffL
+                    self.flagnum -= 1
+                    if self.assist[m] == 0:
+                        break
+                    m = self.table[m]
+                self.finalData[self.di] = chr(self.table[m] & 0xff)
+                self.di += 1
+            loop = self.decodeloop()
+            if loop == 0xffff:
+                return
+            for i in xrange(loop):
+                numbytes = self.decodenumbytes()
+                self.update(0x10)
+                print m, self.flags, self.flagnum, 2
+                m = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
+                self.flags = (self.flags << 2) & 0xffffffffL
+                print m
+                t = self.keywords[m + 8]
+                n = self.trans_topflag_to(0, self.flags, self.flagnum, t)
+                self.flags = (self.flags << t) & 0xffffffffL
+                self.flagnum -= t
+                for i in xrange(numbytes):
+                    self.finalData[self.di] = self.finalData[self.di - n]
+                    self.di += 1
+
+    def readShort(self, si = None):
+        if si:
+            self.si = si
+        result, = unpack('H', self.data[self.si : self.si + 2])
+        self.si += 2
+        return result
+
+    def readByte(self, si = None):
+        if si:
+            self.si = si
+        result, = unpack('B', self.data[self.si])
+        self.si += 1
+        return result
+
+    def readInt(self, si = None):
+        if si:
+            self.si = si
+        result, = unpack('I', self.data[self.si : self.si + 4])
+        self.si += 4
+        return result
+
+    def move_top(self, x):
+        t = x >> 15
+        return t & 0xffff
+
+    def get_topflag(self, x, y):
+        t = x >> 31
+        return t & 0xffffffff
+    
+    def trans_topflag_to(self, x, y, z, n):
+        for i in xrange(n):
+            x <<= 1
+            x |= self.get_topflag(y, z)
+            y  = (y << 1) & 0xffffffff
+            z -= 1
+        return x & 0xffffffff
+
+    def update(self, x):
+        if self.flagnum < x:
+            self.flags |= self.readShort() << (0x10 - self.flagnum) & 0xffffffffL
+            self.flagnum += 0x10
+            
+    def decodeloop(self):
+        self.update(3)
+        loop = self.key_0x12
+        if self.get_topflag(self.flags, self.flagnum) == 0:
+            self.flags = (self.flags << 1) & 0xffffffffL
+            self.flagnum -= 1
+            t = 0
+            t = self.trans_topflag_to(t, self.flags, self.flagnum, 2)
+            self.flags = (self.flags << 2) & 0xffffffffL
+            self.flagnum -= 2
+            loop = self.key_0x13
+            if t != 0:
+                t = self.keywords[t + 0xE]
+                self.update(t)
+                loop = self.trans_topflag_to(0, self.flags, self.flagnum, t)
+                if loop == 0:
+                    self.flags = (self.flags << t) & 0xffffffffL
+                    self.flagnum -= t
+                    return 0xffff
+                else:
+                    self.flags = (self.flags << t) & 0xffffffffL
+                    self.flagnum -= t
+        else:
+            self.flags = (self.flags << 1) & 0xffffffffL
+            self.flagnum -= 1
+        return loop
+
+    def decodenumbytes(self):
+        self.update(3)
+        numbytes = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
+        if numbytes == 0:
+            self.flags = (self.flags << 2) & 0xffffffffL
+            self.flagnum -= 2
+            numbytes = (self.keywords[1] << 8) | self.keywords[0]
+        else:
+            self.flags = (self.flags << 2) & 0xffffffffL
+            self.flagnum -= 2
+            if self.get_topflag(self.flags, self.flagnum) == 0:
+                self.flags = (self.flags << 1) & 0xffffffffL
+                self.flagnum -= 1
+                numbytes = (self.keywords[numbytes * 2 + 1] << 8) | self.keywords[numbytes * 2]
+            else:
+                self.flags = (self.flags << 1) & 0xffffffffL
+                self.flagnum -= 1
+                t = self.keywords[numbytes + 0xB]
+                self.update(t)
+                numbytes = 0
+                numbytes = self.trans_topflag_to(numbytes, self.flags, self.flagnum, t)
+                self.flags = (self.flags << t) & 0xffffffffL
+                self.flagnum -= t
+        return numbytes
+                
 
     def expand(self):
-        loop = unpack('H', self.data[0xF])
+        loop = self.readByte(0xF)
         offset, flags = 0, 0
-        self.di = 16
-        self.si = di + 2 * loop
+        self.di = self.si
+        self.si += 2 * loop
+        self.table = []
+        self.assist = []
+        for i in xrange(loop):
+            if offset % 16 == 0:
+                flags = self.readShort()
+            self.table.append(unpack('B', self.data[self.di])[0])
+            self.table.append(unpack('B', self.data[self.di + 1])[0])
+            self.di += 2
+            self.assist.append(self.move_top(flags))
+            flags = (flags << 1) & 0xffff
+            self.assist.append(self.move_top(flags))
+            flags = (flags << 1) & 0xffff
+            offset += 2
 
 @singleton
 class Midi(MKFDecoder):
