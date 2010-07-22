@@ -9,11 +9,13 @@ from mkf import *
 
 if __name__ == '__main__':
     f = MKFDecoder('fire.mkf')
-    print f.count
+    yj1 = YJ1Decoder()
     if not os.path.exists(r'.\fire'): os.makedirs(r'.\fire')
-    print f.indexes
     for i in xrange(f.count):
-        with open(r'.\fire\%d.dat' % i, 'wb') as fi: fi.write(f.read(i)) 
+        data = f.read(i)
+        print len(data)
+        if data:
+            with open(r'.\fire\%d.dat' % i, 'wb') as fi: fi.write(yj1.decode(f.read(i))) 
     #sys.exit(0)
     #print dir()
     #g = GOPS()

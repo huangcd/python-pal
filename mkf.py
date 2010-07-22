@@ -121,12 +121,11 @@ class YJ1Decoder:
             return
         self.data = data
         tag = self.readInt()
-        print hex(tag)
         if tag != 0x315f4a59:
             return
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
-        self.finalData = [0 for i in xrange(0x10000)]
+        self.finalData = ['\x00' for i in xrange(0x10000)]
         prev_src_pos = self.si
         prev_dst_pos = self.di
         blocks = self.readByte(0xC)
@@ -164,7 +163,8 @@ class YJ1Decoder:
                 self.flagnum = 0x20
                 self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffffL
                 self.analysis()
-            return ''.join([x for x in self.finalData if x != 0])
+        print self.di
+        return ''.join([x for x in self.finalData if x != 0])
 
     def analysis(self):
         loop = 0
@@ -191,10 +191,8 @@ class YJ1Decoder:
             for i in xrange(loop):
                 numbytes = self.decodenumbytes()
                 self.update(0x10)
-                print m, self.flags, self.flagnum, 2
                 m = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
                 self.flags = (self.flags << 2) & 0xffffffffL
-                print m
                 t = self.keywords[m + 8]
                 n = self.trans_topflag_to(0, self.flags, self.flagnum, t)
                 self.flags = (self.flags << t) & 0xffffffffL
@@ -242,6 +240,7 @@ class YJ1Decoder:
 
     def update(self, x):
         if self.flagnum < x:
+            print self.flagnum
             self.flags |= self.readShort() << (0x10 - self.flagnum) & 0xffffffffL
             self.flagnum += 0x10
             
