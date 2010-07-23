@@ -126,10 +126,18 @@ def debug_yj1():
         print yj1.vec
     pass
 
+def test_FBP():
+    obj = FBP()
+    path = r'.\fbp'
+    if not os.path.exists(path): os.mkdir(path)
+    for i in xrange(obj.count):
+        img = obj.getImage(i, 0)
+        img.save(r'%s\%d.png' % (path, i), 'PNG')
+
 if __name__ == '__main__':
     import os
     from time import clock
     clock()
     os.chdir(r'..')
-    test_ABC()
+    test_FBP()
     print clock()
