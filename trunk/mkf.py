@@ -105,7 +105,7 @@ class YJ1Decoder:
         self.assist = []
         self.keywords = [0 for i in xrange(0x14)]
         self.data = ''
-        self.finalData = []
+        self.finalData = '' 
 
     def decode(self, data):
         self.si = self.di = 0 #记录文件位置的指针 记录解开后保存数据所在数组中的指向位置
@@ -119,12 +119,12 @@ class YJ1Decoder:
         if not data:
             return
         self.data = data
-        tag = self.readInt()
-        if tag != 0x315f4a59:
+        self.dataLen = len(data)
+        if self.readInt() != 0x315f4a59: # '1' '_' 'J' 'Y'
             return
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
-        self.finalData = ['\x00' for i in xrange(self.orgLen)]
+        self.finalData = ['\x00' for i in xrange(0x10000)]
         prev_src_pos = self.si
         prev_dst_pos = self.di
         blocks = self.readByte(0xC)
@@ -139,7 +139,7 @@ class YJ1Decoder:
                 prev_dst_pos += ext_length
                 self.si = prev_src_pos
                 self.di = prev_dst_pos
-            first = 0
+            self.first = 0
             
             ext_length = self.readShort()
             pack_length = self.readShort()
@@ -159,7 +159,7 @@ class YJ1Decoder:
                 self.key_0x12 = self.keywords[0x12]
                 self.key_0x13 = self.keywords[0x13]
                 self.flagnum = 0x20
-                self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffffL
+                self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffff
                 self.analysis()
 
         return ''.join([x for x in self.finalData if x != 0])
@@ -176,7 +176,7 @@ class YJ1Decoder:
                 self.update(0x10)
                 while True:
                     m = self.trans_topflag_to(m, self.flags, self.flagnum, 1)
-                    self.flags = (self.flags << 1) & 0xffffffffL
+                    self.flags = (self.flags << 1) & 0xffffffff
                     self.flagnum -= 1
                     if self.assist[m] == 0:
                         break
@@ -190,11 +190,11 @@ class YJ1Decoder:
                 numbytes = self.decodenumbytes()
                 self.update(0x10)
                 m = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
-                self.flags = (self.flags << 2) & 0xffffffffL
+                self.flags = (self.flags << 2) & 0xffffffff
                 self.flagnum -= 2
                 t = self.keywords[m + 8]
                 n = self.trans_topflag_to(0, self.flags, self.flagnum, t)
-                self.flags = (self.flags << t) & 0xffffffffL
+                self.flags = (self.flags << t) & 0xffffffff
                 self.flagnum -= t
                 for i in xrange(numbytes):
                     self.finalData[self.di] = self.finalData[self.di - n]
@@ -203,21 +203,30 @@ class YJ1Decoder:
     def readShort(self, si = None):
         if si:
             self.si = si
-        result, = unpack('H', self.data[self.si : self.si + 2])
+        if self.si >= self.dataLen:
+            result = 0
+        else:
+            result, = unpack('H', self.data[self.si : self.si + 2])
         self.si += 2
         return result
 
     def readByte(self, si = None):
         if si:
             self.si = si
-        result, = unpack('B', self.data[self.si])
+        if self.si >= self.dataLen:
+            result = 0
+        else:
+            result, = unpack('B', self.data[self.si])
         self.si += 1
         return result
 
     def readInt(self, si = None):
         if si:
             self.si = si
-        result, = unpack('I', self.data[self.si : self.si + 4])
+        if self.si >= self.dataLen:
+            result = 0
+        else:
+            result, = unpack('I', self.data[self.si : self.si + 4])
         self.si += 4
         return result
 
@@ -239,18 +248,18 @@ class YJ1Decoder:
 
     def update(self, x):
         if self.flagnum < x:
-            self.flags |= self.readShort() << (0x10 - self.flagnum) & 0xffffffffL
+            self.flags |= self.readShort() << (0x10 - self.flagnum) & 0xffffffff
             self.flagnum += 0x10
             
     def decodeloop(self):
         self.update(3)
         loop = self.key_0x12
         if self.get_topflag(self.flags, self.flagnum) == 0:
-            self.flags = (self.flags << 1) & 0xffffffffL
+            self.flags = (self.flags << 1) & 0xffffffff
             self.flagnum -= 1
             t = 0
             t = self.trans_topflag_to(t, self.flags, self.flagnum, 2)
-            self.flags = (self.flags << 2) & 0xffffffffL
+            self.flags = (self.flags << 2) & 0xffffffff
             self.flagnum -= 2
             loop = self.key_0x13
             if t != 0:
@@ -258,14 +267,14 @@ class YJ1Decoder:
                 self.update(t)
                 loop = self.trans_topflag_to(0, self.flags, self.flagnum, t)
                 if loop == 0:
-                    self.flags = (self.flags << t) & 0xffffffffL
+                    self.flags = (self.flags << t) & 0xffffffff
                     self.flagnum -= t
                     return 0xffff
                 else:
-                    self.flags = (self.flags << t) & 0xffffffffL
+                    self.flags = (self.flags << t) & 0xffffffff
                     self.flagnum -= t
         else:
-            self.flags = (self.flags << 1) & 0xffffffffL
+            self.flags = (self.flags << 1) & 0xffffffff
             self.flagnum -= 1
         return loop
 
@@ -273,24 +282,24 @@ class YJ1Decoder:
         self.update(3)
         numbytes = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
         if numbytes == 0:
-            self.flags = (self.flags << 2) & 0xffffffffL
+            self.flags = (self.flags << 2) & 0xffffffff
             self.flagnum -= 2
             numbytes = (self.keywords[1] << 8) | self.keywords[0]
         else:
-            self.flags = (self.flags << 2) & 0xffffffffL
+            self.flags = (self.flags << 2) & 0xffffffff
             self.flagnum -= 2
             if self.get_topflag(self.flags, self.flagnum) == 0:
-                self.flags = (self.flags << 1) & 0xffffffffL
+                self.flags = (self.flags << 1) & 0xffffffff
                 self.flagnum -= 1
                 numbytes = (self.keywords[numbytes * 2 + 1] << 8) | self.keywords[numbytes * 2]
             else:
-                self.flags = (self.flags << 1) & 0xffffffffL
+                self.flags = (self.flags << 1) & 0xffffffff
                 self.flagnum -= 1
                 t = self.keywords[numbytes + 0xB]
                 self.update(t)
                 numbytes = 0
                 numbytes = self.trans_topflag_to(numbytes, self.flags, self.flagnum, t)
-                self.flags = (self.flags << t) & 0xffffffffL
+                self.flags = (self.flags << t) & 0xffffffff
                 self.flagnum -= t
         return numbytes
                 
@@ -539,11 +548,4 @@ class Palettes:
         return self.palettes[pIndex][cIndex]
 
 if __name__ == '__main__':
-    f = MKFDecoder('fire.mkf')
-    yj1 = YJ1Decoder()
-    if not os.path.exists(r'.\fire'): os.makedirs(r'.\fire')
-    for i in xrange(f.count):
-        data = f.read(i)
-        print len(data), i
-        if data:
-            with open(r'.\fire\%d.dat' % i, 'wb') as fi: fi.write(yj1.decode(f.read(i))) 
+    pass
