@@ -108,12 +108,11 @@ class YJ1Decoder:
         self.finalData = []
 
     def decode(self, data):
-        # TODO YJ_1解析
-        self.si = self.di = 0 #; //记录文件位置的指针 记录解开后保存数据所在数组中的指向位置
+        self.si = self.di = 0 #记录文件位置的指针 记录解开后保存数据所在数组中的指向位置
         self.first = 1
         self.key_0x12 = self.key_0x13 = 0
         self.flags = 0
-        self.flagnum = 0        
+        self.flagnum = 0
 
         pack_length = 0
         ext_length = 0
@@ -125,7 +124,7 @@ class YJ1Decoder:
             return
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
-        self.finalData = ['\x00' for i in xrange(0x10000)]
+        self.finalData = ['\x00' for i in xrange(self.orgLen)]
         prev_src_pos = self.si
         prev_dst_pos = self.di
         blocks = self.readByte(0xC)
@@ -159,11 +158,10 @@ class YJ1Decoder:
                     d += 1
                 self.key_0x12 = self.keywords[0x12]
                 self.key_0x13 = self.keywords[0x13]
-                
                 self.flagnum = 0x20
                 self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffffL
                 self.analysis()
-        print self.di
+
         return ''.join([x for x in self.finalData if x != 0])
 
     def analysis(self):
@@ -193,6 +191,7 @@ class YJ1Decoder:
                 self.update(0x10)
                 m = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
                 self.flags = (self.flags << 2) & 0xffffffffL
+                self.flagnum -= 2
                 t = self.keywords[m + 8]
                 n = self.trans_topflag_to(0, self.flags, self.flagnum, t)
                 self.flags = (self.flags << t) & 0xffffffffL
@@ -240,7 +239,6 @@ class YJ1Decoder:
 
     def update(self, x):
         if self.flagnum < x:
-            print self.flagnum
             self.flags |= self.readShort() << (0x10 - self.flagnum) & 0xffffffffL
             self.flagnum += 0x10
             
@@ -428,7 +426,7 @@ class RGM(RLEDecoder):
 class SubPlace(RLEDecoder):
     '''
     图元包，每个图元均为RLE，形状是菱形，而且其大小为32*15像素
-    这里RLEDecoder仅仅是为了使用MKFDecoder和RLEDecoder中的方法，
+    这里继承RLEDecoder仅仅是为了使用MKFDecoder和RLEDecoder中的方法，
     而不调用RLEDecoder.__init__或者MKFDecoder.__init__方法
     '''
     def __init__(self, data):
@@ -460,7 +458,6 @@ class Fire(MKFDecoder):
     法术效果图，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（FIRE.mkf）
     '''
     def __init__(self):
-        # TODO fire.mkf似乎不能用GOPLike解析
         MKFDecoder.__init__(self, 'fire.mkf')
         self.subPlaces = []
         for i in xrange(self.count):
@@ -541,3 +538,12 @@ class Palettes:
         self.check(pIndex, cIndex)
         return self.palettes[pIndex][cIndex]
 
+if __name__ == '__main__':
+    f = MKFDecoder('fire.mkf')
+    yj1 = YJ1Decoder()
+    if not os.path.exists(r'.\fire'): os.makedirs(r'.\fire')
+    for i in xrange(f.count):
+        data = f.read(i)
+        print len(data), i
+        if data:
+            with open(r'.\fire\%d.dat' % i, 'wb') as fi: fi.write(yj1.decode(f.read(i))) 

@@ -11,11 +11,19 @@ if __name__ == '__main__':
     f = MKFDecoder('fire.mkf')
     yj1 = YJ1Decoder()
     if not os.path.exists(r'.\fire'): os.makedirs(r'.\fire')
+    #for i in xrange(f.count):
     for i in xrange(f.count):
         data = f.read(i)
-        print len(data)
-        if data:
-            with open(r'.\fire\%d.dat' % i, 'wb') as fi: fi.write(yj1.decode(f.read(i))) 
+        try:
+            if not os.path.exists(r'.\fire\%d' % i): os.mkdir(r'.\fire\%d' % i)
+            s = SubPlace(yj1.decode(data))
+            for j in xrange(s.count):
+                img = s.getImage(j, 0)
+                img.save(r'.\fire\%d\%d.png' % (i, j), 'PNG')
+        except struct.error:
+            print 'error occurs while decoding %d.dat' % i
+            with open(r'.\fire\%d.dat' % i, 'wb') as fh: fh.write(data)
+            #with open(r'.\fire\%d.dat' % i, 'wb') as fi: fi.write(f.read(i))#(yj1.decode(f.read(i))) 
     #sys.exit(0)
     #print dir()
     #g = GOPS()
