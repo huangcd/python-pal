@@ -72,23 +72,48 @@ def show_image_using_pygame():
         pygame.display.update()
 
 def test_fire():
-    f = MKFDecoder('fire.mkf')
-    yj1 = YJ1Decoder()
-    if not os.path.exists(r'.\fire'): os.makedirs(r'.\fire')
-    #for i in xrange(f.count):
-    for i in xrange(f.count):
-        data = f.read(i)
-        try:
-            if not os.path.exists(r'.\fire\%d' % i): os.mkdir(r'.\fire\%d' % i)
-            yj1data = yj1.decode(data)
-        except IndexError:
-            print 'error occurs while decoding %d.dat' % i
-            with open(r'.\fire\%d.dat' % i, 'wb') as fh: fh.write(data)
-        s = SubPlace(yj1data)
-        for j in xrange(s.count):
-            img = s.getImage(j, 0)
-            img.save(r'.\fire\%d\%d.png' % (i, j), 'PNG')
+    f = Fire()
+    path = r'.\fire'
+    if not os.path.exists(path): os.mkdir(path)
+    for i, fire in enumerate(f.subPlaces):
+        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        for j in xrange(fire.count):
+            img = fire.getImage(j, 0)
+            if img:
+                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
             
+def test_f():
+    f = F()
+    path = r'.\f'
+    if not os.path.exists(path): os.mkdir(path)
+    for i, _f in enumerate(f.subPlaces):
+        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        for j in xrange(_f.count):
+            img = _f.getImage(j, 0)
+            if img:
+                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                
+def test_ABC():
+    f = ABC()
+    path = r'.\abc'
+    if not os.path.exists(path): os.mkdir(path)
+    for i, _f in enumerate(f.subPlaces):
+        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        for j in xrange(_f.count):
+            img = _f.getImage(j, 0)
+            if img:
+                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                
+def test_MGO():
+    f = MGO()
+    path = r'.\mgo'
+    if not os.path.exists(path): os.mkdir(path)
+    for i, _f in enumerate(f.subPlaces):
+        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        for j in xrange(_f.count):
+            img = _f.getImage(j, 0)
+            if img:
+                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
 
 def debug_yj1():
     path = "D:\\programming\\pypal\\fire\\11.dat"
@@ -102,4 +127,9 @@ def debug_yj1():
     pass
 
 if __name__ == '__main__':
-    test_fire()
+    import os
+    from time import clock
+    clock()
+    os.chdir(r'..')
+    test_ABC()
+    print clock()

@@ -33,8 +33,8 @@ class MKFDecoder:
     '''
 
     def __init__(self, path):
+        self.yj1 = YJ1Decoder()
         try:
-            
             f = open(path, 'rb')
             self.content = f.read()
             #===================================================================
@@ -76,10 +76,12 @@ class MKFDecoder:
         '''
         读取指定文件
         '''
-        #self.check(index)
         self.check(index + 1)
         if not self.cache.has_key(index):
-            self.cache[index] = self.content[self.indexes[index]:self.indexes[index + 1]]
+            data = self.content[self.indexes[index]:self.indexes[index + 1]]
+            if self.isYJ1(index):
+                data = self.yj1.decode(data)
+            self.cache[index] = data
         return self.cache[index]
 
 @singleton
@@ -117,14 +119,16 @@ class YJ1Decoder:
         pack_length = 0
         ext_length = 0
         if not data:
-            return
+            print 'no data to decode'
+            return ''
         self.data = data
         self.dataLen = len(data)
         if self.readInt() != 0x315f4a59: # '1' '_' 'J' 'Y'
+            print 'not YJ_1 data'
             return
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
-        self.finalData = ['\x00' for i in xrange(0x10000)]
+        self.finalData = ['\x00' for i in xrange(self.orgLen)]
         prev_src_pos = self.si
         prev_dst_pos = self.di
         blocks = self.readByte(0xC)
@@ -461,19 +465,6 @@ class SubPlace(RLEDecoder):
             self.cache[index] = data[:4] + data
         return self.cache[index]
 
-@singleton
-class Fire(MKFDecoder):
-    '''
-    法术效果图，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（FIRE.mkf）
-    '''
-    def __init__(self):
-        MKFDecoder.__init__(self, 'fire.mkf')
-        self.subPlaces = []
-        for i in xrange(self.count):
-            data = self.read(i)
-            self.subPlaces.append(RLEDecoder(data))
-
-
 class GOPLike(MKFDecoder):
     '''
     类GOP.MKF的存储格式的mkf文件的解码器
@@ -503,6 +494,38 @@ class GOPS(GOPLike):
     '''
     def __init__(self):
         GOPLike.__init__(self, 'gop.mkf')
+
+@singleton
+class Fire(GOPLike):
+    '''
+    法术效果图，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（FIRE.mkf）
+    '''
+    def __init__(self):
+        GOPLike.__init__(self, 'fire.mkf')
+
+@singleton
+class F(GOPLike):
+    '''
+    我战斗形象，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（F.mkf）
+    '''
+    def __init__(self):
+        GOPLike.__init__(self, 'f.mkf')
+        
+@singleton
+class ABC(GOPLike):
+    '''
+    敌战斗形象，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（ABC.mkf）
+    '''
+    def __init__(self):
+        GOPLike.__init__(self, 'abc.mkf')
+        
+@singleton
+class MGO(GOPLike):
+    '''
+    各种人物形象，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（MGO.mkf）
+    '''
+    def __init__(self):
+        GOPLike.__init__(self, 'mgo.mkf')
 
 @singleton
 class Palettes: 
