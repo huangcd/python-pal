@@ -4,27 +4,39 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
+ABC	.\mkf.py	/^class ABC(GOPLike):$/;"	c
 Ball	.\mkf.py	/^class Ball(RLEDecoder):$/;"	c
+F	.\mkf.py	/^class F(GOPLike):$/;"	c
+FBP	.\mkf.py	/^class FBP:$/;"	c
 Fire	.\mkf.py	/^class Fire(GOPLike):$/;"	c
 GOPLike	.\mkf.py	/^class GOPLike(MKFDecoder):$/;"	c
 GOPS	.\mkf.py	/^class GOPS(GOPLike):$/;"	c
 Image	.\mkf.py	/^from PIL import Image, ImageDraw$/;"	i
 ImageDraw	.\mkf.py	/^from PIL import Image, ImageDraw$/;"	i
+MAP	.\mkf.py	/^class MAP:$/;"	c
+MGO	.\mkf.py	/^class MGO(GOPLike):$/;"	c
 MKFDecoder	.\mkf.py	/^class MKFDecoder:$/;"	c
 Midi	.\mkf.py	/^class Midi(MKFDecoder):$/;"	c
 MidiPlayer	.\test.py	/^class MidiPlayer(Thread):$/;"	c
 Palettes	.\mkf.py	/^class Palettes: $/;"	c
 RGM	.\mkf.py	/^class RGM(RLEDecoder):$/;"	c
 RLEDecoder	.\mkf.py	/^class RLEDecoder(MKFDecoder):$/;"	c
+RNG	.\mkf.py	/^class RNG:$/;"	c
 SubPlace	.\mkf.py	/^class SubPlace(RLEDecoder):$/;"	c
 Thread	.\test.py	/^from threading import Thread$/;"	i
 YJ1Decoder	.\mkf.py	/^class YJ1Decoder:$/;"	c
+__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:ABC
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Ball
+__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:F
+__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:FBP
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Fire
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:GOPS
+__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:MAP
+__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:MGO
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Midi
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Palettes
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:RGM
+__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:RNG
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:YJ1Decoder
 __init__	.\mkf.py	/^    def __init__(self, data):$/;"	m	class:SubPlace
 __init__	.\mkf.py	/^    def __init__(self, path):$/;"	m	class:GOPLike
@@ -68,7 +80,10 @@ singleton	.\singleton.py	/^def singleton(cls):$/;"	f
 stop	.\mkf.py	/^    def stop(self, index):$/;"	m	class:Midi
 struct	.\mkf.py	/^import os, struct, sys, time$/;"	i
 sys	.\mkf.py	/^import os, struct, sys, time$/;"	i
+test_ABC	.\test.py	/^def test_ABC():$/;"	f
+test_MGO	.\test.py	/^def test_MGO():$/;"	f
 test_ball	.\test.py	/^def test_ball():$/;"	f
+test_f	.\test.py	/^def test_f():$/;"	f
 test_fire	.\test.py	/^def test_fire():$/;"	f
 test_gop	.\test.py	/^def test_gop():$/;"	f
 test_palette	.\test.py	/^def test_palette():$/;"	f

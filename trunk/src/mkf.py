@@ -32,11 +32,17 @@ class MKFDecoder:
     000F9A60     0B 12 80 38     文件的末尾
     '''
 
-    def __init__(self, path):
+    def __init__(self, path = None, data = None):
+        # path和data不能同时是None
+        assert path or data
         self.yj1 = YJ1Decoder()
         try:
-            f = open(path, 'rb')
-            self.content = f.read()
+            # 优先使用path（优先从文件读取）
+            if path:
+                f = open(path, 'rb')
+                self.content = f.read()
+            else:
+                self.content = data
             #===================================================================
             # 偏移（索引）表长度，假设文件前4位为6C 02 00 00（little-end的int值为
             # 26CH = 620），说明索引表长度为620字节，即620/4 = 155个整数，由于第一个
@@ -44,9 +50,9 @@ class MKFDecoder:
             # 最后一个整数指向文件末尾，也就是文件的长度，因此实际上MKF内部的文件是由
             # 前后两个偏移量之间的byte表示的。这样由于一共有154个个偏移量，因此共有
             # 153个文件
+            #
             # ！！！补充：第一个int（前四位）不仅是偏移表长度，也是第一个文件的开头
             # ABC.MFK中前面两个4位分别相等只是巧合（第一个文件为0）
-            #
             #===================================================================
             self.count = unpack('I', self.content[:4])[0] / 4# - 1
             self.indexes = []
@@ -74,7 +80,7 @@ class MKFDecoder:
 
     def read(self, index):
         '''
-        读取指定文件
+        读取并返回指定文件，如果文件是经过YJ_1压缩的话，返回解压以后的内容
         '''
         self.check(index + 1)
         if not self.cache.has_key(index):
@@ -93,23 +99,12 @@ class YJ1Decoder:
               Y J _ 1 新文件长 源文件长（包含'YJ_1'头）block数                loop数
     '''
     def __init__(self):
-        self.si = 0 #source index
-        self.di = 0 #dest index
-        self.first = 1
-        self.flags = 0
-        self.flagnum = 0
-        self.key_0x12 = 0
-        self.key_0x13 = 0
-        self.orgLen = 0
-        self.fileLen = 0
-        self.tableLen = 0
-        self.table = []
-        self.assist = []
-        self.keywords = [0 for i in xrange(0x14)]
-        self.data = ''
-        self.finalData = '' 
+        pass
 
     def decode(self, data):
+        '''
+        解析YJ_1格式的压缩文件，如果文件不是YJ_1格式或者文件为空，则直接返回原始数据
+        '''
         self.si = self.di = 0 #记录文件位置的指针 记录解开后保存数据所在数组中的指向位置
         self.first = 1
         self.key_0x12 = self.key_0x13 = 0
@@ -125,12 +120,15 @@ class YJ1Decoder:
         self.dataLen = len(data)
         if self.readInt() != 0x315f4a59: # '1' '_' 'J' 'Y'
             print 'not YJ_1 data'
-            return
+            return data
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
         self.finalData = ['\x00' for i in xrange(self.orgLen)]
+        self.keywords = [0 for i in xrange(0x14)]
+
         prev_src_pos = self.si
         prev_dst_pos = self.di
+
         blocks = self.readByte(0xC)
         
         self.expand()
@@ -327,45 +325,12 @@ class YJ1Decoder:
             flags = (flags << 1) & 0xffff
             offset += 2
 
-@singleton
-class Midi(MKFDecoder):
-    '''
-    midi.mkf文件解码和midi音乐播放
-    调用pygame实现播放功能
-    待改进：测试clock时候能和其它地方的clock兼容
-    '''
-    def __init__(self):
-        MKFDecoder.__init__(self, 'midi.mkf')
-        self.clock = pygame.time.Clock()
-        pygame.mixer.init()
-
-    def save(self, index, path):
-        with open(path, 'wb') as f:
-            f.write(self.read(index))
-
-    def play(self, index, ticks = 20):
-        '''
-        播放midi.mkf文件中的midi音乐
-        @param index: midi音乐索引
-        @param ticks: clock的tick参数
-        '''
-        name = 'tmp.mid'
-        save(self, index, name)
-        pygame.mixer.music.load(name)
-        pygame.mixer.music.play()
-        while pygame.mixer.music.get_busy():
-            self.clock.tick(ticks)
-        os.remove(name)
-
-    def stop(self, index):
-        pygame.mixer.music.stop()
-
 class RLEDecoder(MKFDecoder):
     '''
     RLE图片解析
     '''
     def __init__(self, path):
-        MKFDecoder.__init__(self, path)        
+        MKFDecoder.__init__(self, path)
         self.palette = Palettes()
 
     def getSize(self, index):
@@ -421,6 +386,39 @@ class RLEDecoder(MKFDecoder):
         return img
 
 @singleton
+class Midi(MKFDecoder):
+    '''
+    midi.mkf文件解码和midi音乐播放
+    调用pygame实现播放功能
+    待改进：测试clock时候能和其它地方的clock兼容
+    '''
+    def __init__(self):
+        MKFDecoder.__init__(self, 'midi.mkf')
+        self.clock = pygame.time.Clock()
+        pygame.mixer.init()
+
+    def save(self, index, path):
+        with open(path, 'wb') as f:
+            f.write(self.read(index))
+
+    def play(self, index, ticks = 20):
+        '''
+        播放midi.mkf文件中的midi音乐
+        @param index: midi音乐索引
+        @param ticks: clock的tick参数
+        '''
+        name = 'tmp.mid'
+        save(self, index, name)
+        pygame.mixer.music.load(name)
+        pygame.mixer.music.play()
+        while pygame.mixer.music.get_busy():
+            self.clock.tick(ticks)
+        os.remove(name)
+
+    def stop(self, index):
+        pygame.mixer.music.stop()
+
+@singleton
 class Ball(RLEDecoder):
     '''
     物品图片档，经过MKF解开后，每个子文件是标准的RLE图片（ball.mfk）
@@ -458,7 +456,6 @@ class SubPlace(RLEDecoder):
         '''
         覆盖MKFDecoder的read方法
         '''
-        #self.check(index)
         self.check(index + 1)
         if not self.cache.has_key(index):
             data = self.content[self.indexes[index] << 1:self.indexes[index + 1] << 1]
@@ -526,6 +523,87 @@ class MGO(GOPLike):
     '''
     def __init__(self):
         GOPLike.__init__(self, 'mgo.mkf')
+        
+@singleton
+class FBP(MKFDecoder):
+    '''
+    背景图，经过MKF解开后，每个子文件必须经过DEYJ1解压，
+    解开后的大小是64000字节，用来描述战斗时的背景（320*200），
+    其数据是调色板的索引。（FBP.mkf）
+    '''
+    def __init__(self):
+        MKFDecoder.__init__(self, 'fbp.mkf')
+        self.palette = Palettes()
+
+    def getImage(self, index, pIndex):
+        data = self.read(index)
+        data = unpack('B' * len(data), data) 
+        width, height = 320, 200
+        img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        dr = ImageDraw.Draw(img)
+        for y in xrange(height):
+            for x in xrange(width):
+                dr.point((x, y), self.palette.getColor(pIndex, data[x + y * width]))
+        return img
+
+@singleton
+class RNG:
+    '''
+    过场动画（RNG.mkf）
+    RNG文件经过MKF解开后，每个子文件仍然是一个经过MKF压缩的文件，
+    然后再次经过MKF解开后，其子文件是一个YJ1压缩的文件（够复杂吧，
+    大量的解压缩需要高的CPU资源，仙剑在386时代就能很好的完成，呵呵，厉害）。
+
+    以第一次解开的MKF文件为例子，假如该文件为1.RNG，
+    对该文件再次进行MKF解压后，会得到若干个小的文件
+    （1_01，1_02，1_03……），这些小文件中（需要再次经过DEYJ1解压），
+    第一个文件通过比较大，而其后的文件比较小，这是由于其第一个文件是描述动画的第一帧，
+    而以后的文件只描述在第一帧上进行变化的数据。
+
+    在描述变化信息的文件中，由于不包含变化位置的坐标信息，
+    因此也总是从动画位置的左上角（0，0）开始的，依次描述变化，
+    直至无变化可描述以止则结束（因此如果当前帧和前一帧变化较大，
+    则描述文件会比较大）。
+    '''
+    def __init__(self):
+        # TODO
+        pass
+
+@singleton
+class MAP:
+    '''
+    地图档（MAP.mkf）
+    
+    MAP和GOP有着相同的子文件数，因此，MAP和GOP是一一对应的关系。
+    MAP经过MKF解开后，其子文件采用DEYJ1方式压缩。经过DEYJ1解开后
+    的文件都应该具有65536字节的大小，其具体格式如下：
+
+    每512字节描述一行，共有128行（512*128=65536字节）。其中第一
+    行中，每4个字节描述一个图元。这 4个字节中，头两个字节用来描
+    述底层图片的索引，后两字节描述在该底层图片上覆盖图片的信息。
+    其中图片在GOP中的索引的计算为：将高位字节的第5位移到低位字节
+    的前面，形成一个9字节描述的索引，如下面的代码：
+
+    fel = readByte(); //低字节
+    felp = readByte(); //高字节
+    felp >>= 4;
+    felp &= 1; //取高字节的第5位的值
+    elem1 = ( felp << 8) | fel; //图元在GOP中的索引
+
+    对于覆盖层信息，索引的计算方式同上，只不过仅当索引大于0的时
+    候才进行覆盖（因此并非所有地方都需要覆盖），并且覆盖的索引需
+    要减去1才是覆盖层在GOP中的真正索引。
+
+    另外需要注意的是，在同一行中，第偶数张图片的上角会与前一张图
+    片的右角进行拼接，因此其显示位置为前一张图片的(x+16, y+8)的地
+    方，以下是示例：
+
+    第一行：(0, 0)(16, 8)(32, 0)(48, 8)(64, 0)......
+    第二行：(0, 16)(16, 24)(32, 16)(48, 24)(64, 16)...... 
+    '''
+    def __init__(self):
+        # TODO
+        pass
 
 @singleton
 class Palettes: 
