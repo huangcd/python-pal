@@ -12,8 +12,10 @@ Fire	.\mkf.py	/^class Fire(GOPLike):$/;"	c
 GOPLike	.\mkf.py	/^class GOPLike(MKFDecoder):$/;"	c
 GOPS	.\mkf.py	/^class GOPS(GOPLike):$/;"	c
 Image	.\mkf.py	/^from PIL import Image, ImageDraw$/;"	i
+Image	.\test.py	/^    from PIL import Image, ImageDraw$/;"	i
 ImageDraw	.\mkf.py	/^from PIL import Image, ImageDraw$/;"	i
-MAP	.\mkf.py	/^class MAP:$/;"	c
+ImageDraw	.\test.py	/^    from PIL import Image, ImageDraw$/;"	i
+MAP	.\mkf.py	/^class MAP(MKFDecoder):$/;"	c
 MGO	.\mkf.py	/^class MGO(GOPLike):$/;"	c
 MKFDecoder	.\mkf.py	/^class MKFDecoder:$/;"	c
 Midi	.\mkf.py	/^class Midi(MKFDecoder):$/;"	c
@@ -25,6 +27,7 @@ RNG	.\mkf.py	/^class RNG(MKFDecoder):$/;"	c
 SubPlace	.\mkf.py	/^class SubPlace(RLEDecoder):$/;"	c
 Thread	.\test.py	/^from threading import Thread$/;"	i
 YJ1Decoder	.\mkf.py	/^class YJ1Decoder:$/;"	c
+__func	.\test.py	/^    def __func(*arg, **args):$/;"	f	function:test	file:
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:ABC
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Ball
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:F
@@ -47,7 +50,7 @@ analysis	.\mkf.py	/^    def analysis(self):$/;"	m	class:YJ1Decoder
 blit	.\mkf.py	/^    def blit(self):$/;"	m	class:RNG
 check	.\mkf.py	/^    def check(self, index):$/;"	m	class:MKFDecoder
 check	.\mkf.py	/^    def check(self, pIndex, cIndex = 0):$/;"	m	class:Palettes
-clock	.\test.py	/^    from time import clock$/;"	i
+clock	.\test.py	/^from time import clock$/;"	i
 debug_yj1	.\test.py	/^def debug_yj1():$/;"	f
 decode	.\mkf.py	/^    def decode(self, data):$/;"	m	class:YJ1Decoder
 decodeloop	.\mkf.py	/^    def decodeloop(self):$/;"	m	class:YJ1Decoder
@@ -60,6 +63,11 @@ getFrameCount	.\mkf.py	/^    def getFrameCount(self):$/;"	m	class:RNG
 getImage	.\mkf.py	/^    def getImage(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
 getImage	.\mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:FBP
 getImage	.\mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:RLEDecoder
+getImageData	.\mkf.py	/^    def getImageData(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
+getImageData	.\mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:FBP
+getImageData	.\mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:RLEDecoder
+getMap	.\mkf.py	/^    def getMap(self, index, pIndex):$/;"	m	class:MAP
+getMapData	.\mkf.py	/^    def getMapData(self, index, pIndex):$/;"	m	class:MAP
 getNextFrame	.\mkf.py	/^    def getNextFrame(self):$/;"	m	class:RNG
 getPalette	.\mkf.py	/^    def getPalette(self, index):$/;"	m	class:Palettes
 getSize	.\mkf.py	/^    def getSize(self, index):$/;"	m	class:RLEDecoder
@@ -91,6 +99,7 @@ startVideo	.\mkf.py	/^    def startVideo(self, index, pIndex):$/;"	m	class:RNG
 stop	.\mkf.py	/^    def stop(self, index):$/;"	m	class:Midi
 struct	.\mkf.py	/^import os, struct, sys, time$/;"	i
 sys	.\mkf.py	/^import os, struct, sys, time$/;"	i
+test	.\test.py	/^def test(func):$/;"	f
 test_ABC	.\test.py	/^def test_ABC():$/;"	f
 test_FBP	.\test.py	/^def test_FBP():$/;"	f
 test_MGO	.\test.py	/^def test_MGO():$/;"	f
@@ -99,6 +108,8 @@ test_ball	.\test.py	/^def test_ball():$/;"	f
 test_f	.\test.py	/^def test_f():$/;"	f
 test_fire	.\test.py	/^def test_fire():$/;"	f
 test_gop	.\test.py	/^def test_gop():$/;"	f
+test_imageData	.\test.py	/^def test_imageData():$/;"	f
+test_map	.\test.py	/^def test_map():$/;"	f
 test_palette	.\test.py	/^def test_palette():$/;"	f
 test_rgm	.\test.py	/^def test_rgm():$/;"	f
 time	.\mkf.py	/^import os, struct, sys, time$/;"	i
