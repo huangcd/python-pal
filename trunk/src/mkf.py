@@ -387,16 +387,16 @@ class RLEDecoder(MKFDecoder):
         @param index：图片索引
         @param pIndex: 调色板索引
         '''
-        data = self.getImageData(index, pIndex)
         width, height = self.getSize(index)
+        if not width or not height: 
+            return None
+        data = self.getImageData(index, pIndex)
         img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
         dr = ImageDraw.Draw(img)
         for x in xrange(width):
             for y in xrange(height):
                 if data[y][x]: dr.point((x, y), data[y][x])
         return img
-        if not width or not height: 
-            return None
         img = Image.new('RGBA', self.getSize(index), (0, 0, 0, 0))
         dr = ImageDraw.Draw(img)
         # 一次unpack所有数据
