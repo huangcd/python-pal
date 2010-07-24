@@ -150,8 +150,8 @@ class YJ1Decoder:
                 pack_length = ext_length + 4
                 for j in xrange(ext_length):
                     self.finalData[self.di] = self.data[self.si]
-                    di += 1
-                    si += 1
+                    self.di += 1
+                    self.si += 1
                 ext_length = pack_length - 4
             else:
                 d = 0
@@ -329,8 +329,8 @@ class RLEDecoder(MKFDecoder):
     '''
     RLE图片解析
     '''
-    def __init__(self, path):
-        MKFDecoder.__init__(self, path)
+    def __init__(self, path = None, data = None):
+        MKFDecoder.__init__(self, path, data)
         self.palette = Palettes()
 
     def getSize(self, index):
@@ -439,6 +439,8 @@ class SubPlace(RLEDecoder):
     图元包，每个图元均为RLE，形状是菱形，而且其大小为32*15像素
     这里继承RLEDecoder仅仅是为了使用MKFDecoder和RLEDecoder中的方法，
     而不调用RLEDecoder.__init__或者MKFDecoder.__init__方法
+
+    另外SubPlace里面不进行YJ_1的解码
     '''
     def __init__(self, data):
         self.content = data
@@ -456,6 +458,7 @@ class SubPlace(RLEDecoder):
         '''
         覆盖MKFDecoder的read方法
         '''
+        # TODO 考虑是否增加YJ_1解码
         self.check(index + 1)
         if not self.cache.has_key(index):
             data = self.content[self.indexes[index] << 1:self.indexes[index + 1] << 1]
@@ -547,7 +550,7 @@ class FBP(MKFDecoder):
         return img
 
 @singleton
-class RNG:
+class RNG(MKFDecoder):
     '''
     过场动画（RNG.mkf）
     RNG文件经过MKF解开后，每个子文件仍然是一个经过MKF压缩的文件，
@@ -564,10 +567,170 @@ class RNG:
     因此也总是从动画位置的左上角（0，0）开始的，依次描述变化，
     直至无变化可描述以止则结束（因此如果当前帧和前一帧变化较大，
     则描述文件会比较大）。
+
+    RNG图片也是320×200的
     '''
     def __init__(self):
-        # TODO
-        pass
+        MKFDecoder.__init__(self, 'rng.mkf')
+        self.palette = Palettes()
+
+    def startVideo(self, index, pIndex):
+        '''
+        开始一段录像，返回录像的帧数
+        '''
+        videodata = self.read(index)
+        self.video = MKFDecoder(data = videodata)
+        self.frameIndex = 0
+        self.pIndex = pIndex
+        width, height = 320, 200
+        self.image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        self.info = [0 for i in xrange(64000)] # 320 * 200的图片
+        return self.video.count
+
+    def finishCurrentVideo(self):
+        del self.video
+        del self.frameIndex
+        del self.image
+
+    def getFrameCount(self):
+        assert self.video
+        return self.video.count
+
+    def hasNextFrame(self):
+        return self.frameIndex < self.video.count
+
+    def readByte(self):
+        v, = unpack('B', self.data[self.pos])
+        self.pos += 1
+        return v
+
+    def readShort(self):
+        v, = unpack('H', self.data[self.pos : self.pos + 2])
+        self.pos += 2
+        return v
+
+    def setByte(self):
+        self.info[self.dst_ptr] = self.readByte()
+        self.dst_ptr += 1
+
+    def blit(self):
+        '''
+        解开帧动画
+        @param data: 字符串形式的数据
+        '''
+        self.dst_ptr = 0
+        bdata = wdata = ddata = 0
+        self.pos = 0
+
+        while True:
+            bdata = self.readByte()
+            if bdata == 0x00 or bdata == 0x13:
+                return self.info
+            elif bdata == 0x01 or bdata == 0x05:
+                pass
+            elif bdata == 0x02:
+                self.dst_ptr += 2
+            elif bdata == 0x03:
+                bdata = self.readByte()
+                self.dst_ptr += (bdata + 1) << 1
+            elif bdata == 0x04:
+                wdata = self.readShort()
+                self.dst_ptr += (wdata + 1) << 1
+            elif 0x06 <= bdata <= 0x0a:
+                while bdata >= 0x06:
+                    self.setByte()
+                    self.setByte()
+                    bdata -= 1
+            elif bdata == 0x0b:
+                bdata = self.readByte()
+                for i in xrange(bdata + 1):
+                    self.setByte()
+                    self.setByte()
+            elif bdata == 0x0c:
+                ddata = self.readShort()
+                for i in xrange(ddata + 1):
+                    self.setByte()
+                    self.setByte()
+            elif bdata == 0x0d:
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+            elif bdata == 0x0e:
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+            elif bdata == 0x0f:
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+            elif bdata == 0x10:
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+                self.pos -= 2
+                self.setByte()
+                self.setByte()
+            elif bdata == 0x11:
+                bdata = self.readByte()
+                for i in xrange(bdata + 1):
+                    self.setByte()
+                    self.setByte()
+                    self.pos -= 2
+                self.pos += 2
+            elif bdata == 0x12:
+                ddata = self.readShort()
+                for i in xrange(ddata + 1):
+                    self.setByte()
+                    self.setByte()
+                    self.pos -= 2
+                self.pos += 2
+        return self.info
+
+    def getNextFrame(self):
+        '''
+        @member data: 两次MKFDecoder加上YJ_1Decoder解析之后得到的帧信息（字符串）
+        @member info: self.data经过blit处理以后的数据（Byte数组）
+        '''
+        self.data = self.video.read(self.frameIndex)
+        # error handler
+        if not self.data or not self.hasNextFrame():
+            self.frameIndex += 1
+            return self.image
+        self.blit()
+        self.frameIndex += 1
+        width, height = 320, 200
+        dr = ImageDraw.Draw(self.image)
+        for y in xrange(height):
+            for x in xrange(width):
+                idx = x + y * width
+                dr.point((x, y), self.palette.getColor(self.pIndex, self.info[idx]))
+        return self.image
+
+    def getCurrentFrame(self):
+        return self.image
 
 @singleton
 class MAP:

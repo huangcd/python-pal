@@ -134,10 +134,24 @@ def test_FBP():
         img = obj.getImage(i, 0)
         img.save(r'%s\%d.png' % (path, i), 'PNG')
 
+def test_RNG():
+    f = RNG()
+    path = r'.\rng'
+    if not os.path.exists(path): os.mkdir(path)
+    for i in xrange(f.count):
+        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        f.startVideo(i, 0)
+        print f.video.count
+        while f.hasNextFrame():
+            print f.frameIndex
+            img = f.getNextFrame()
+            img.save(r'%s\%d\%s.png' % (path, i, str(f.frameIndex).zfill(10)), 'PNG')
+        
+
 if __name__ == '__main__':
     import os
     from time import clock
     clock()
     os.chdir(r'..')
-    test_FBP()
+    test_RNG()
     print clock()

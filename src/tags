@@ -7,7 +7,7 @@
 ABC	.\mkf.py	/^class ABC(GOPLike):$/;"	c
 Ball	.\mkf.py	/^class Ball(RLEDecoder):$/;"	c
 F	.\mkf.py	/^class F(GOPLike):$/;"	c
-FBP	.\mkf.py	/^class FBP:$/;"	c
+FBP	.\mkf.py	/^class FBP(MKFDecoder):$/;"	c
 Fire	.\mkf.py	/^class Fire(GOPLike):$/;"	c
 GOPLike	.\mkf.py	/^class GOPLike(MKFDecoder):$/;"	c
 GOPS	.\mkf.py	/^class GOPS(GOPLike):$/;"	c
@@ -21,7 +21,7 @@ MidiPlayer	.\test.py	/^class MidiPlayer(Thread):$/;"	c
 Palettes	.\mkf.py	/^class Palettes: $/;"	c
 RGM	.\mkf.py	/^class RGM(RLEDecoder):$/;"	c
 RLEDecoder	.\mkf.py	/^class RLEDecoder(MKFDecoder):$/;"	c
-RNG	.\mkf.py	/^class RNG:$/;"	c
+RNG	.\mkf.py	/^class RNG(MKFDecoder):$/;"	c
 SubPlace	.\mkf.py	/^class SubPlace(RLEDecoder):$/;"	c
 Thread	.\test.py	/^from threading import Thread$/;"	i
 YJ1Decoder	.\mkf.py	/^class YJ1Decoder:$/;"	c
@@ -39,11 +39,12 @@ __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:RGM
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:RNG
 __init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:YJ1Decoder
 __init__	.\mkf.py	/^    def __init__(self, data):$/;"	m	class:SubPlace
+__init__	.\mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:MKFDecoder
+__init__	.\mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:RLEDecoder
 __init__	.\mkf.py	/^    def __init__(self, path):$/;"	m	class:GOPLike
-__init__	.\mkf.py	/^    def __init__(self, path):$/;"	m	class:MKFDecoder
-__init__	.\mkf.py	/^    def __init__(self, path):$/;"	m	class:RLEDecoder
 __init__	.\test.py	/^	def __init__(self):$/;"	m	class:MidiPlayer
 analysis	.\mkf.py	/^    def analysis(self):$/;"	m	class:YJ1Decoder
+blit	.\mkf.py	/^    def blit(self):$/;"	m	class:RNG
 check	.\mkf.py	/^    def check(self, index):$/;"	m	class:MKFDecoder
 check	.\mkf.py	/^    def check(self, pIndex, cIndex = 0):$/;"	m	class:Palettes
 clock	.\test.py	/^    from time import clock$/;"	i
@@ -52,13 +53,19 @@ decode	.\mkf.py	/^    def decode(self, data):$/;"	m	class:YJ1Decoder
 decodeloop	.\mkf.py	/^    def decodeloop(self):$/;"	m	class:YJ1Decoder
 decodenumbytes	.\mkf.py	/^    def decodenumbytes(self):$/;"	m	class:YJ1Decoder
 expand	.\mkf.py	/^    def expand(self):$/;"	m	class:YJ1Decoder
+finishCurrentVideo	.\mkf.py	/^    def finishCurrentVideo(self):$/;"	m	class:RNG
 getColor	.\mkf.py	/^    def getColor(self, pIndex, cIndex):$/;"	m	class:Palettes
+getCurrentFrame	.\mkf.py	/^    def getCurrentFrame(self):$/;"	m	class:RNG
+getFrameCount	.\mkf.py	/^    def getFrameCount(self):$/;"	m	class:RNG
 getImage	.\mkf.py	/^    def getImage(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
+getImage	.\mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:FBP
 getImage	.\mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:RLEDecoder
+getNextFrame	.\mkf.py	/^    def getNextFrame(self):$/;"	m	class:RNG
 getPalette	.\mkf.py	/^    def getPalette(self, index):$/;"	m	class:Palettes
 getSize	.\mkf.py	/^    def getSize(self, index):$/;"	m	class:RLEDecoder
 get_instance	.\singleton.py	/^    def get_instance(*arg, **args):$/;"	f	function:singleton
 get_topflag	.\mkf.py	/^    def get_topflag(self, x, y):$/;"	m	class:YJ1Decoder
+hasNextFrame	.\mkf.py	/^    def hasNextFrame(self):$/;"	m	class:RNG
 isYJ1	.\mkf.py	/^    def isYJ1(self, index):$/;"	m	class:MKFDecoder
 move_top	.\mkf.py	/^    def move_top(self, x):$/;"	m	class:YJ1Decoder
 os	.\mkf.py	/^import os, struct, sys, time$/;"	i
@@ -69,19 +76,25 @@ pygame	.\mkf.py	/^import pygame$/;"	i
 pygame	.\test.py	/^    import pygame$/;"	i
 read	.\mkf.py	/^    def read(self, index):$/;"	m	class:MKFDecoder
 read	.\mkf.py	/^    def read(self, index):$/;"	m	class:SubPlace
+readByte	.\mkf.py	/^    def readByte(self):$/;"	m	class:RNG
 readByte	.\mkf.py	/^    def readByte(self, si = None):$/;"	m	class:YJ1Decoder
 readInt	.\mkf.py	/^    def readInt(self, si = None):$/;"	m	class:YJ1Decoder
+readShort	.\mkf.py	/^    def readShort(self):$/;"	m	class:RNG
 readShort	.\mkf.py	/^    def readShort(self, si = None):$/;"	m	class:YJ1Decoder
 run	.\test.py	/^	def run(self):$/;"	m	class:MidiPlayer
 save	.\mkf.py	/^    def save(self, index, path):$/;"	m	class:Midi
+setByte	.\mkf.py	/^    def setByte(self):$/;"	m	class:RNG
 show_image_using_pygame	.\test.py	/^def show_image_using_pygame():$/;"	f
 singleton	.\mkf.py	/^from singleton import singleton$/;"	i
 singleton	.\singleton.py	/^def singleton(cls):$/;"	f
+startVideo	.\mkf.py	/^    def startVideo(self, index, pIndex):$/;"	m	class:RNG
 stop	.\mkf.py	/^    def stop(self, index):$/;"	m	class:Midi
 struct	.\mkf.py	/^import os, struct, sys, time$/;"	i
 sys	.\mkf.py	/^import os, struct, sys, time$/;"	i
 test_ABC	.\test.py	/^def test_ABC():$/;"	f
+test_FBP	.\test.py	/^def test_FBP():$/;"	f
 test_MGO	.\test.py	/^def test_MGO():$/;"	f
+test_RNG	.\test.py	/^def test_RNG():$/;"	f
 test_ball	.\test.py	/^def test_ball():$/;"	f
 test_f	.\test.py	/^def test_f():$/;"	f
 test_fire	.\test.py	/^def test_fire():$/;"	f
