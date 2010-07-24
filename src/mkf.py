@@ -339,13 +339,62 @@ class RLEDecoder(MKFDecoder):
             return (0, 0)
         return unpack('HH', data[4:8])
 
-    def getImage(self, index, pIndex):
+    def getImageData(self, index, pIndex):
         '''
-        返回给定调色板之后渲染出来的道具图片
+        返回给定调色板之后渲染出来的图片数据（每个点上要么是None，要么是一个三维RGB值）
         @param index：图片索引
         @param pIndex: 调色板索引
         '''
         width, height = self.getSize(index)
+        if not width or not height:
+            return None
+        img = [[None for i in xrange(width)] for j in xrange(height)]
+        _data = self.read(index)
+        data = unpack('B' * len(_data), _data)
+        offset = 8
+        line = 0
+        x = 0
+        palette = self.palette.getPalette(pIndex)
+        while line < height:
+            flag = width
+            # 处理一行数据
+            while flag > 0:
+                num = data[offset]
+                # 透明颜色个数
+                if num > 0x80:
+                    num -= 0x80
+                    x += num
+                    flag -= num
+                    offset += 1
+                    # very special case! 
+                    if num == 0x7F: continue 
+                if flag == 0: break
+                num = data[offset] # 不透明颜色个数
+                offset += 1
+                for k in xrange(num):
+                    img[line][x] = palette[data[offset + k]]
+                    #dr.point((x, line), palette[data[offset + k]])
+                    x += 1
+                offset += num
+                flag -= num
+            line += 1
+            x = 0
+        return img
+
+    def getImage(self, index, pIndex):
+        '''
+        返回给定调色板之后渲染出来的图片
+        @param index：图片索引
+        @param pIndex: 调色板索引
+        '''
+        data = self.getImageData(index, pIndex)
+        width, height = self.getSize(index)
+        img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
+        dr = ImageDraw.Draw(img)
+        for x in xrange(width):
+            for y in xrange(height):
+                if data[y][x]: dr.point((x, y), data[y][x])
+        return img
         if not width or not height: 
             return None
         img = Image.new('RGBA', self.getSize(index), (0, 0, 0, 0))
@@ -365,11 +414,8 @@ class RLEDecoder(MKFDecoder):
                 # 透明颜色个数
                 if num > 0x80:
                     num -= 0x80
-                    for i in xrange(num):
-                        flag -= 1
-                        # 透明就不用画了
-                        #dr.point((x, line), (0, 0, 0, 0))
-                        x += 1
+                    x += num
+                    flag -= num
                     offset += 1
                     # very special case! 
                     if num == 0x7F: continue 
@@ -486,6 +532,15 @@ class GOPLike(MKFDecoder):
         '''
         return self.subPlaces[fIndex].getImage(index, pIndex)
 
+    def getImageData(self, fIndex, index, pIndex):
+        '''
+        @param fIndex：子文件索引
+        @param index: 图片索引
+        @param pIndex: 调色板索引
+        '''
+        return self.subPlaces[fIndex].getImageData(index, pIndex)
+
+
 @singleton
 class GOPS(GOPLike):
     '''
@@ -538,7 +593,19 @@ class FBP(MKFDecoder):
         MKFDecoder.__init__(self, 'fbp.mkf')
         self.palette = Palettes()
 
+    def getImageData(self, index, pIndex):
+        palette = self.palette.getPalette(pIndex)
+        data = self.read(index)
+        data = unpack('B' * len(data), data)
+        width, height = 320, 200
+        img = [[None for i in xrange(width)] for j in xrange(height)]
+        for y in xrange(height):
+            for x in xrange(width):
+                img[y][x] = palette[data[x + y * width]]
+        return img
+
     def getImage(self, index, pIndex):
+        palette = self.palette.getPalette(pIndex)
         data = self.read(index)
         data = unpack('B' * len(data), data) 
         width, height = 320, 200
@@ -546,7 +613,7 @@ class FBP(MKFDecoder):
         dr = ImageDraw.Draw(img)
         for y in xrange(height):
             for x in xrange(width):
-                dr.point((x, y), self.palette.getColor(pIndex, data[x + y * width]))
+                dr.point((x, y), palette[data[x + y * width]])
         return img
 
 @singleton
@@ -733,7 +800,7 @@ class RNG(MKFDecoder):
         return self.image
 
 @singleton
-class MAP:
+class MAP(MKFDecoder):
     '''
     地图档（MAP.mkf）
     
@@ -763,10 +830,55 @@ class MAP:
 
     第一行：(0, 0)(16, 8)(32, 0)(48, 8)(64, 0)......
     第二行：(0, 16)(16, 24)(32, 16)(48, 24)(64, 16)...... 
+    
+    地图大小是2064×2064
     '''
     def __init__(self):
+        MKFDecoder.__init__(self, 'map.mkf')
+        self.gop = GOPS()
         # TODO
         pass
+
+    def getMap(self, index, pIndex):
+        data = self.getMapData(index, pIndex)
+        img = Image.new('RGBA', (2064, 2064), (0, 0, 0, 0))
+        dr = ImageDraw.Draw(img)
+        for y in xrange(2064):
+            for x in xrange(2064):
+                if data[y][x]:
+                    dr.point((x, y), data[y][x])
+        return img
+
+    def getMapData(self, index, pIndex):
+        data = self.read(index)
+        img = [[None for i in xrange(2064)] for j in xrange(2064)]
+        subPlace = self.gop.subPlaces[index]
+        if not data:
+            return img
+        assert len(data) == 65536
+        for line in xrange(128):
+            for column in xrange(0, 512, 4):
+                idx = line * 512 + column
+                low, high = unpack('BB', data[idx:idx + 2])
+                high = (high >> 4) & 0x1
+                rIndex = (high << 8) | low                
+                bg = subPlace.getImageData(rIndex, pIndex) 
+                low, high = unpack('BB', data[idx + 2: idx + 4])
+                high = (high >> 4) & 0x1
+                rIndex = ((high << 8) | low) - 1
+                fg = subPlace.getImageData(rIndex, pIndex) if rIndex >= 0 else None
+                shiftX = column << 2
+                shiftY = (line << 4) + (0 if column % 8 == 0 else 8)
+                for y in xrange(15):
+                    for x in xrange(32):
+                        if bg[y][x]:
+                            img[y + shiftY][x + shiftX] = bg[y][x]
+                if fg:
+                    for y in xrange(15):
+                        for x in xrange(32):
+                            if fg[y][x]:
+                                img[y + shiftY][x + shiftX] = fg[y][x]
+        return img
 
 @singleton
 class Palettes: 

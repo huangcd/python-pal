@@ -7,6 +7,15 @@ Created on 2010-7-21
 '''
 from mkf import *
 from threading import Thread
+from time import clock
+
+def test(func):
+    def __func(*arg, **args):
+        start = clock()
+        func(*arg, **args)
+        print 'total time used: %fs' % (clock() - start)
+    return __func
+
 
 class MidiPlayer(Thread):
 	def __init__(self):
@@ -25,16 +34,19 @@ class MidiPlayer(Thread):
 def play_midi_in_loop():
     MidiPlayer().start()
 
+@test
 def test_palette():
     p = Palettes()
     print p.getColor(0, 90)
 
+@test
 def test_ball():
     b = Ball()
     for i in xrange(b.count):
         img = b.getImage(i, 0)
         img.save(r'.\ball\%d.png' % i, 'PNG')
 
+@test
 def test_rgm():
     r = RGM()
     for i in xrange(r.count):
@@ -42,6 +54,7 @@ def test_rgm():
         if img:
             img.save(r'.\rgm\%d.png' % i, 'PNG')
 
+@test
 def test_gop():
     g = GOPS()
     path = r'.\gop'
@@ -53,6 +66,7 @@ def test_gop():
             if img:
                 img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
 
+@test
 def show_image_using_pygame():
     import pygame
     pygame.init()
@@ -71,6 +85,7 @@ def show_image_using_pygame():
         screen.blit(sth, (0, 0))
         pygame.display.update()
 
+@test
 def test_fire():
     f = Fire()
     path = r'.\fire'
@@ -82,6 +97,7 @@ def test_fire():
             if img:
                 img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
             
+@test
 def test_f():
     f = F()
     path = r'.\f'
@@ -93,6 +109,7 @@ def test_f():
             if img:
                 img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
                 
+@test
 def test_ABC():
     f = ABC()
     path = r'.\abc'
@@ -104,6 +121,7 @@ def test_ABC():
             if img:
                 img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
                 
+@test
 def test_MGO():
     f = MGO()
     path = r'.\mgo'
@@ -115,6 +133,7 @@ def test_MGO():
             if img:
                 img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
 
+@test
 def debug_yj1():
     path = "D:\\programming\\pypal\\fire\\11.dat"
     with open(path, 'rb') as f: data = f.read()
@@ -126,14 +145,17 @@ def debug_yj1():
         print yj1.vec
     pass
 
+@test
 def test_FBP():
     obj = FBP()
     path = r'.\fbp'
     if not os.path.exists(path): os.mkdir(path)
     for i in xrange(obj.count):
-        img = obj.getImage(i, 0)
-        img.save(r'%s\%d.png' % (path, i), 'PNG')
+        if i == 63:
+            img = obj.getImage(i, 9)
+            img.save(r'%s\%d.png' % (path, i), 'PNG')
 
+@test
 def test_RNG():
     f = RNG()
     path = r'.\rng'
@@ -146,12 +168,31 @@ def test_RNG():
             print f.frameIndex
             img = f.getNextFrame()
             img.save(r'%s\%d\%s.png' % (path, i, str(f.frameIndex).zfill(10)), 'PNG')
-        
+
+@test
+def test_imageData():
+    obj = FBP()
+    data = obj.getImageData(2, 0)
+    from PIL import Image, ImageDraw
+    img = Image.new('RGBA', (320, 200), (0, 0, 0, 0))
+    dr = ImageDraw.Draw(img)
+    for y in xrange(47):
+        for x in xrange(48):
+            if data[y][x]:
+                dr.point((x, y), data[y][x])
+    #img.show()
+
+@test
+def test_map():
+    obj = MAP()
+    path = r'.\map'
+    if not os.path.exists(path): os.mkdir(path)
+    for i in xrange(obj.count):
+        print i
+        img = obj.getMap(i, 0)
+        img.save(r'%s\%d.png' % (path, i), 'PNG')
 
 if __name__ == '__main__':
     import os
-    from time import clock
-    clock()
     os.chdir(r'..')
-    test_RNG()
-    print clock()
+    test_map()
