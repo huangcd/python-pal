@@ -195,4 +195,4 @@ def test_map():
 if __name__ == '__main__':
     import os
     os.chdir(r'..')
-    test_map()
+    test_rgm()
