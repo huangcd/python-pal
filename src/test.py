@@ -18,26 +18,21 @@ def test(func):
 
 
 class MidiPlayer(Thread):
-	def __init__(self):
-		Thread.__init__(self)
-		self.midi = Midi()
+    def __init__(self):
+        Thread.__init__(self)
+        self.midi = Midi()
 
-	def run(self):
-		i = 0
-		while 1:
-			try:
-				self.midi.play(i)
-				i += 1
-			except:
-				i = 0
+    def run(self):
+        i = 0
+        while 1:
+            try:
+                self.midi.play(i)
+                i += 1
+            except:
+                i = 0
 
 def play_midi_in_loop():
     MidiPlayer().start()
-
-@test
-def test_palette():
-    p = Palettes()
-    print p.getColor(0, 90)
 
 @test
 def test_ball():
@@ -68,7 +63,7 @@ def test_gop():
 
 @test
 def show_image_using_pygame():
-    import pygame
+    b = Ball()
     pygame.init()
     screen = pygame.display.set_mode((640, 360), 0, 32)
     img = b.getImage(10, 1)
@@ -173,7 +168,7 @@ def test_RNG():
 def test_imageData():
     obj = FBP()
     data = obj.getImageData(2, 0)
-    from PIL import Image, ImageDraw
+
     img = Image.new('RGBA', (320, 200), (0, 0, 0, 0))
     dr = ImageDraw.Draw(img)
     for y in xrange(47):
@@ -191,8 +186,89 @@ def test_map():
         print i
         img = obj.getMap(i, 0)
         img.save(r'%s\%d.png' % (path, i), 'PNG')
+        
+@test
+def test_all(show):
+    @test
+    def tt_abc(show):     
+        print 'test abc'
+        obj = ABC()
+        img = obj.getImage(1, 0, 0)
+        if show: img.show()
+    tt_abc(show)
+    
+    @test
+    def tt_ball(show):
+        print 'test ball'
+        obj = Ball()
+        img = obj.getImage(2, 0)
+        if show: img.show()
+    tt_ball(show)
+    
+    @test
+    def tt_f(show):
+        print 'test f'
+        obj = F()
+        img = obj.subPlaces[0].getImage(0, 0)
+        if show: img.show()
+    tt_f(show)
+    
+    @test
+    def tt_fbp(show):
+        print 'test fbp'
+        obj = FBP()
+        img = obj.getImage(0, 0)
+        if show: img.show()
+    tt_fbp(show)
+    
+    @test
+    def tt_fire(show):
+        print 'test fire'
+        obj = Fire()
+        img = obj.subPlaces[0].getImage(0, 0)
+        if show: img.show()
+    tt_fire(show)
+    
+    @test
+    def tt_gop(show):
+        print 'test gop'
+        obj = GOPS()
+        img = obj.subPlaces[1].getImage(0, 0)
+        if show: img.show()
+    tt_gop(show)
+    
+    @test
+    def tt_mgo(show):
+        print 'test mgo'
+        obj = MGO()
+        img = obj.subPlaces[2].getImage(0, 0)
+        if show: img.show()
+    tt_mgo(show)
+    
+    @test
+    def tt_midi(show):
+        print 'test midi'
+        obj = Midi()
+        if show: obj.play(1, 20)
+    tt_midi(show)
+    
+    @test
+    def tt_rgm(show):
+        print 'test rgm'
+        obj = RGM()
+        img = obj.getImage(2, 0)
+        if show: img.show()
+    tt_f(show)
+    
+    @test
+    def tt_rng(show):
+        print 'test rng'
+        obj = RNG()
+        obj.startVideo(1, 0)
+        img = obj.getNextFrame()
+        if show: img.show()
+        
 
 if __name__ == '__main__':
-    import os
-    os.chdir(r'..')
-    test_rgm()
+    os.chdir(r'..\..')
+    test_all(True)
