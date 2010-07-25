@@ -6,26 +6,11 @@ Created on 2010-7-19
 @author: huangcd.thu@gmail.com
 '''
 
-import os, sys, time
+import os
 import pygame
 from singleton import singleton
+from struct import unpack
 from PIL import Image, ImageDraw
-from array import array
-
-class Data:
-    def __init__(self, data, start, end):
-        self.data = data
-        self.start = start
-        self.end = end
-
-    def __getslice__(self, i, j):
-        return Data(self.data, self.start + i, self.start + j)
-
-    def __getitem__(self, i):
-        return self.data[self.start + i]
-
-    def __len__(self):
-        return self.end - self.start
 
 class MKFDecoder:
     '''
@@ -51,14 +36,13 @@ class MKFDecoder:
         # path和data不能同时是None
         assert path or data
         self.yj1 = YJ1Decoder()
-        self.data = array('B')
         try:
             # 优先使用path（优先从文件读取）
             if path:
                 f = open(path, 'rb')
-                self.data.fromfile(f, os.path.getsize(path))
+                self.content = f.read()
             else:
-                self.data.extend(data)
+                self.content = data
             #===================================================================
             # 偏移（索引）表长度，假设文件前4位为6C 02 00 00（little-end的int值为
             # 26CH = 620），说明索引表长度为620字节，即620/4 = 155个整数，由于第一个
@@ -70,12 +54,11 @@ class MKFDecoder:
             # ！！！补充：第一个int（前四位）不仅是偏移表长度，也是第一个文件的开头
             # ABC.MFK中前面两个4位分别相等只是巧合（第一个文件为0）
             #===================================================================
-            self.count = ((self.data[3] << 24) | (self.data[2] << 16) | (self.data[1] << 8) | self.data[0]) / 4# - 1
+            self.count = unpack('I', self.content[:4])[0] / 4# - 1
             self.indexes = []
             self.cache = {}
             for i in xrange(self.count):
-                i <<= 2
-                index = (self.data[i + 3] << 24) | (self.data[i + 2] << 16) | (self.data[i + 1] << 8) | self.data[i]
+                index = unpack('I', self.content[(i) << 2: (i + 1) << 2])[0]
                 self.indexes.append(index)
             # 减去最后一个偏移量，对外而言，count就表示mkf文件中的子文件个数
             self.count -= 1
@@ -87,15 +70,16 @@ class MKFDecoder:
 
     def check(self, index):
         assert index <= self.count and index >= 0
+            
+    def getFileCount(self):
+        return self.count
 
     def isYJ1(self, index):
         '''
         判断文件是否为YJ_1压缩
         '''
         self.check(index)
-        idx = self.indexes[index]
-        return self.data[idx] == 0x59 and self.data[idx + 1] == 0x4a and self.data[idx + 2] == 0x5f and self.data[idx + 3] == 0x31
-        #return self.data[self.indexes[index]:self.indexes[index] + 4] == '\x59\x4A\x5F\x31'
+        return self.content[self.indexes[index]:self.indexes[index] + 4] == '\x59\x4A\x5F\x31'
 
     def read(self, index):
         '''
@@ -103,7 +87,7 @@ class MKFDecoder:
         '''
         self.check(index + 1)
         if not self.cache.has_key(index):
-            data = self.data[self.indexes[index]:self.indexes[index + 1]]
+            data = self.content[self.indexes[index]:self.indexes[index + 1]]
             if self.isYJ1(index):
                 data = self.yj1.decode(data)
             self.cache[index] = data
@@ -138,14 +122,12 @@ class YJ1Decoder:
         self.data = data
         self.dataLen = len(data)
         if self.readInt() != 0x315f4a59: # '1' '_' 'J' 'Y'
-            self.si -= 4
-            print 'not YJ_1 data, start with ' + hex(self.readInt())
+            print 'not YJ_1 data'
             return data
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
-        print self.orgLen
-        finalData = self.finalData = ['\x00' for i in xrange(self.orgLen)]
-        self.keywords = [0 for i in xrange(0x14)]
+        self.finalData = ['\x00' for _ in xrange(self.orgLen)]
+        self.keywords = [0 for _ in xrange(0x14)]
 
         prev_src_pos = self.si
         prev_dst_pos = self.di
@@ -156,7 +138,7 @@ class YJ1Decoder:
 
         prev_src_pos = self.si
         self.di = prev_dst_pos
-        for i in xrange(blocks):
+        for _ in xrange(blocks):
             if self.first == 0:
                 prev_src_pos += pack_length
                 prev_dst_pos += ext_length
@@ -169,14 +151,14 @@ class YJ1Decoder:
 
             if pack_length == 0:
                 pack_length = ext_length + 4
-                for j in xrange(ext_length):
-                    finalData[self.di] = data[self.si]
+                for _ in xrange(ext_length):
+                    self.finalData[self.di] = self.data[self.si]
                     self.di += 1
                     self.si += 1
                 ext_length = pack_length - 4
             else:
                 d = 0
-                for j in xrange(0x14):
+                for _ in xrange(0x14):
                     self.keywords[d] = self.readByte()
                     d += 1
                 self.key_0x12 = self.keywords[0x12]
@@ -185,17 +167,16 @@ class YJ1Decoder:
                 self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffff
                 self.analysis()
 
-        return ''.join([x for x in finalData if x != 0])
+        return ''.join([x for x in self.finalData if x != 0])
 
     def analysis(self):
-        finalData = self.finalData
         loop = 0
         numbytes = 0
         while True:
             loop = self.decodeloop()
             if loop == 0xffff:
                 return
-            for i in xrange(loop):
+            for _ in xrange(loop):
                 m = 0
                 self.update(0x10)
                 while True:
@@ -205,12 +186,12 @@ class YJ1Decoder:
                     if self.assist[m] == 0:
                         break
                     m = self.table[m]
-                finalData[self.di] = chr(self.table[m] & 0xff)
+                self.finalData[self.di] = chr(self.table[m] & 0xff)
                 self.di += 1
             loop = self.decodeloop()
             if loop == 0xffff:
                 return
-            for i in xrange(loop):
+            for _ in xrange(loop):
                 numbytes = self.decodenumbytes()
                 self.update(0x10)
                 m = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
@@ -220,8 +201,8 @@ class YJ1Decoder:
                 n = self.trans_topflag_to(0, self.flags, self.flagnum, t)
                 self.flags = (self.flags << t) & 0xffffffff
                 self.flagnum -= t
-                for i in xrange(numbytes):
-                    finalData[self.di] = finalData[self.di - n]
+                for _ in xrange(numbytes):
+                    self.finalData[self.di] = self.finalData[self.di - n]
                     self.di += 1
 
     def readShort(self, si = None):
@@ -230,7 +211,7 @@ class YJ1Decoder:
         if self.si >= self.dataLen:
             result = 0
         else:
-            result = (self.data[self.si + 1] << 8) | self.data[self.si]
+            result, = unpack('H', self.data[self.si : self.si + 2])
         self.si += 2
         return result
 
@@ -240,7 +221,7 @@ class YJ1Decoder:
         if self.si >= self.dataLen:
             result = 0
         else:
-            result = self.data[self.si]
+            result, = unpack('B', self.data[self.si])
         self.si += 1
         return result
 
@@ -250,7 +231,7 @@ class YJ1Decoder:
         if self.si >= self.dataLen:
             result = 0
         else:
-            result = (self.data[self.si + 3] << 24) | (self.data[self.si + 2] << 16) | (self.data[self.si + 1] << 8) | self.data[self.si]
+            result, = unpack('I', self.data[self.si : self.si + 4])
         self.si += 4
         return result
 
@@ -263,7 +244,7 @@ class YJ1Decoder:
         return t & 0xffffffff
     
     def trans_topflag_to(self, x, y, z, n):
-        for i in xrange(n):
+        for _ in xrange(n):
             x <<= 1
             x |= self.get_topflag(y, z)
             y  = (y << 1) & 0xffffffff
@@ -335,11 +316,11 @@ class YJ1Decoder:
         self.si += 2 * loop
         self.table = []
         self.assist = []
-        for i in xrange(loop):
+        for _ in xrange(loop):
             if offset % 16 == 0:
                 flags = self.readShort()
-            self.table.append(self.di)
-            self.table.append(self.di + 1)
+            self.table.append(unpack('B', self.data[self.di])[0])
+            self.table.append(unpack('B', self.data[self.di + 1])[0])
             self.di += 2
             self.assist.append(self.move_top(flags))
             flags = (flags << 1) & 0xffff
@@ -359,7 +340,7 @@ class RLEDecoder(MKFDecoder):
         data = self.read(index)
         if len(data) < 8:
             return (0, 0)
-        return (data[5] << 8) | data[4], (data[7] << 8) | data[6]
+        return unpack('HH', data[4:8])
 
     def getImageData(self, index, pIndex):
         '''
@@ -370,8 +351,9 @@ class RLEDecoder(MKFDecoder):
         width, height = self.getSize(index)
         if not width or not height:
             return None
-        img = [[None for i in xrange(width)] for j in xrange(height)]
-        data = self.read(index)
+        img = [[None for _ in xrange(width)] for _ in xrange(height)]
+        _data = self.read(index)
+        data = unpack('B' * len(_data), _data)
         offset = 8
         line = 0
         x = 0
@@ -421,7 +403,8 @@ class RLEDecoder(MKFDecoder):
         img = Image.new('RGBA', self.getSize(index), (0, 0, 0, 0))
         dr = ImageDraw.Draw(img)
         # 一次unpack所有数据
-        data = self.read(index)
+        _data = self.read(index)
+        data = unpack('B' * len(_data), _data)
         offset = 8
         line = 0
         x = 0
@@ -474,7 +457,7 @@ class Midi(MKFDecoder):
         @param ticks: clock的tick参数
         '''
         name = 'tmp.mid'
-        save(self, index, name)
+        self.save(index, name)
         pygame.mixer.music.load(name)
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
@@ -509,16 +492,13 @@ class SubPlace(RLEDecoder):
     另外SubPlace里面不进行YJ_1的解码
     '''
     def __init__(self, data):
-        self.data = data
+        self.content = data
         self.len = len(data)
         if self.len < 2:
             self.count = 0
         else:
-            self.count, = (data[1] << 8) | data[0]
-        self.indexes = []
-        for i in xrange(self.count):
-            i <<= 1
-            self.indexes.append((data[i + 1] << 8) | data[i] or self.len)
+            self.count, = unpack('H', data[:2])
+        self.indexes = map(lambda x: x or self.len, unpack('H' * self.count, data[ : self.count << 1]))
         self.count -= 1
         self.cache = {}
         self.palette = Palettes()
@@ -530,7 +510,7 @@ class SubPlace(RLEDecoder):
         # TODO 考虑是否增加YJ_1解码
         self.check(index + 1)
         if not self.cache.has_key(index):
-            data = self.data[self.indexes[index] << 1:self.indexes[index + 1] << 1]
+            data = self.content[self.indexes[index] << 1:self.indexes[index + 1] << 1]
             self.cache[index] = data[:4] + data
         return self.cache[index]
 
@@ -619,8 +599,9 @@ class FBP(MKFDecoder):
     def getImageData(self, index, pIndex):
         palette = self.palette.getPalette(pIndex)
         data = self.read(index)
+        data = unpack('B' * len(data), data)
         width, height = 320, 200
-        img = [[None for i in xrange(width)] for j in xrange(height)]
+        img = [[None for _ in xrange(width)] for _ in xrange(height)]
         for y in xrange(height):
             for x in xrange(width):
                 img[y][x] = palette[data[x + y * width]]
@@ -629,6 +610,7 @@ class FBP(MKFDecoder):
     def getImage(self, index, pIndex):
         palette = self.palette.getPalette(pIndex)
         data = self.read(index)
+        data = unpack('B' * len(data), data) 
         width, height = 320, 200
         img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
         dr = ImageDraw.Draw(img)
@@ -672,7 +654,7 @@ class RNG(MKFDecoder):
         self.pIndex = pIndex
         width, height = 320, 200
         self.image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
-        self.info = [0 for i in xrange(64000)] # 320 * 200的图片
+        self.info = [0 for _ in xrange(64000)] # 320 * 200的图片
         return self.video.count
 
     def finishCurrentVideo(self):
@@ -688,12 +670,12 @@ class RNG(MKFDecoder):
         return self.frameIndex < self.video.count
 
     def readByte(self):
-        v = self.data[self.pos]
+        v, = unpack('B', self.data[self.pos])
         self.pos += 1
         return v
 
     def readShort(self):
-        v = self.data[self.pos + 1] << 8 | self.data[self.pos]
+        v, = unpack('H', self.data[self.pos : self.pos + 2])
         self.pos += 2
         return v
 
@@ -731,12 +713,12 @@ class RNG(MKFDecoder):
                     bdata -= 1
             elif bdata == 0x0b:
                 bdata = self.readByte()
-                for i in xrange(bdata + 1):
+                for _ in xrange(bdata + 1):
                     self.setByte()
                     self.setByte()
             elif bdata == 0x0c:
                 ddata = self.readShort()
-                for i in xrange(ddata + 1):
+                for _ in xrange(ddata + 1):
                     self.setByte()
                     self.setByte()
             elif bdata == 0x0d:
@@ -783,14 +765,14 @@ class RNG(MKFDecoder):
                 self.setByte()
             elif bdata == 0x11:
                 bdata = self.readByte()
-                for i in xrange(bdata + 1):
+                for _ in xrange(bdata + 1):
                     self.setByte()
                     self.setByte()
                     self.pos -= 2
                 self.pos += 2
             elif bdata == 0x12:
                 ddata = self.readShort()
-                for i in xrange(ddata + 1):
+                for _ in xrange(ddata + 1):
                     self.setByte()
                     self.setByte()
                     self.pos -= 2
@@ -872,7 +854,7 @@ class MAP(MKFDecoder):
 
     def getMapData(self, index, pIndex):
         data = self.read(index)
-        img = [[None for i in xrange(2064)] for j in xrange(2064)]
+        img = [[None for _ in xrange(2064)] for _ in xrange(2064)]
         subPlace = self.gop.subPlaces[index]
         if not data:
             return img
@@ -880,11 +862,11 @@ class MAP(MKFDecoder):
         for line in xrange(128):
             for column in xrange(0, 512, 4):
                 idx = line * 512 + column
-                low, high = data[idx], data[idx + 1]
+                low, high = unpack('BB', data[idx:idx + 2])
                 high = (high >> 4) & 0x1
                 rIndex = (high << 8) | low                
                 bg = subPlace.getImageData(rIndex, pIndex) 
-                low, high = data[idx + 2], data[idx + 3]
+                low, high = unpack('BB', data[idx + 2: idx + 4])
                 high = (high >> 4) & 0x1
                 rIndex = ((high << 8) | low) - 1
                 fg = subPlace.getImageData(rIndex, pIndex) if rIndex >= 0 else None
@@ -914,8 +896,7 @@ class Palettes:
     def __init__(self):
         try:
             f = open('pat.mkf', 'rb')
-            self.data = array('B')
-            self.data.fromfile(f, os.path.getsize('pat.mkf'))
+            self.content = f.read()
             self.offset = 0x28
             self.maxIndex = 11
             self.fileSize = 0x300
@@ -926,10 +907,10 @@ class Palettes:
                 offset = self.offset + i * self.fileSize
                 for j in xrange(self.fileSize / 3):
                     # RGB
-                    self.palettes[i][j] = tuple(map(lambda x: x << 2, self.data[offset:offset + 3]))
+                    self.palettes[i][j] = tuple(map(lambda x: x << 2, unpack('BBB', self.content[offset:offset + 3])))
                     offset += 3
         except IOError:
-            print 'error occurs when try to open file', path
+            print 'error occurs when try to open file pat.mkf'
         finally:
             f.close()
 
