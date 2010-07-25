@@ -6,7 +6,7 @@ Created on 2010-7-19
 @author: huangcd.thu@gmail.com
 '''
 
-import os, struct, sys, time
+import os
 import pygame
 from singleton import singleton
 from struct import unpack
@@ -70,6 +70,9 @@ class MKFDecoder:
 
     def check(self, index):
         assert index <= self.count and index >= 0
+            
+    def getFileCount(self):
+        return self.count
 
     def isYJ1(self, index):
         '''
@@ -123,8 +126,8 @@ class YJ1Decoder:
             return data
         self.orgLen = self.readInt()
         self.fileLen = self.readInt()
-        self.finalData = ['\x00' for i in xrange(self.orgLen)]
-        self.keywords = [0 for i in xrange(0x14)]
+        self.finalData = ['\x00' for _ in xrange(self.orgLen)]
+        self.keywords = [0 for _ in xrange(0x14)]
 
         prev_src_pos = self.si
         prev_dst_pos = self.di
@@ -135,7 +138,7 @@ class YJ1Decoder:
 
         prev_src_pos = self.si
         self.di = prev_dst_pos
-        for i in xrange(blocks):
+        for _ in xrange(blocks):
             if self.first == 0:
                 prev_src_pos += pack_length
                 prev_dst_pos += ext_length
@@ -148,14 +151,14 @@ class YJ1Decoder:
 
             if pack_length == 0:
                 pack_length = ext_length + 4
-                for j in xrange(ext_length):
+                for _ in xrange(ext_length):
                     self.finalData[self.di] = self.data[self.si]
                     self.di += 1
                     self.si += 1
                 ext_length = pack_length - 4
             else:
                 d = 0
-                for j in xrange(0x14):
+                for _ in xrange(0x14):
                     self.keywords[d] = self.readByte()
                     d += 1
                 self.key_0x12 = self.keywords[0x12]
@@ -173,7 +176,7 @@ class YJ1Decoder:
             loop = self.decodeloop()
             if loop == 0xffff:
                 return
-            for i in xrange(loop):
+            for _ in xrange(loop):
                 m = 0
                 self.update(0x10)
                 while True:
@@ -188,7 +191,7 @@ class YJ1Decoder:
             loop = self.decodeloop()
             if loop == 0xffff:
                 return
-            for i in xrange(loop):
+            for _ in xrange(loop):
                 numbytes = self.decodenumbytes()
                 self.update(0x10)
                 m = self.trans_topflag_to(0, self.flags, self.flagnum, 2)
@@ -198,7 +201,7 @@ class YJ1Decoder:
                 n = self.trans_topflag_to(0, self.flags, self.flagnum, t)
                 self.flags = (self.flags << t) & 0xffffffff
                 self.flagnum -= t
-                for i in xrange(numbytes):
+                for _ in xrange(numbytes):
                     self.finalData[self.di] = self.finalData[self.di - n]
                     self.di += 1
 
@@ -241,7 +244,7 @@ class YJ1Decoder:
         return t & 0xffffffff
     
     def trans_topflag_to(self, x, y, z, n):
-        for i in xrange(n):
+        for _ in xrange(n):
             x <<= 1
             x |= self.get_topflag(y, z)
             y  = (y << 1) & 0xffffffff
@@ -313,7 +316,7 @@ class YJ1Decoder:
         self.si += 2 * loop
         self.table = []
         self.assist = []
-        for i in xrange(loop):
+        for _ in xrange(loop):
             if offset % 16 == 0:
                 flags = self.readShort()
             self.table.append(unpack('B', self.data[self.di])[0])
@@ -348,7 +351,7 @@ class RLEDecoder(MKFDecoder):
         width, height = self.getSize(index)
         if not width or not height:
             return None
-        img = [[None for i in xrange(width)] for j in xrange(height)]
+        img = [[None for _ in xrange(width)] for _ in xrange(height)]
         _data = self.read(index)
         data = unpack('B' * len(_data), _data)
         offset = 8
@@ -454,7 +457,7 @@ class Midi(MKFDecoder):
         @param ticks: clock的tick参数
         '''
         name = 'tmp.mid'
-        save(self, index, name)
+        self.save(index, name)
         pygame.mixer.music.load(name)
         pygame.mixer.music.play()
         while pygame.mixer.music.get_busy():
@@ -598,7 +601,7 @@ class FBP(MKFDecoder):
         data = self.read(index)
         data = unpack('B' * len(data), data)
         width, height = 320, 200
-        img = [[None for i in xrange(width)] for j in xrange(height)]
+        img = [[None for _ in xrange(width)] for _ in xrange(height)]
         for y in xrange(height):
             for x in xrange(width):
                 img[y][x] = palette[data[x + y * width]]
@@ -651,7 +654,7 @@ class RNG(MKFDecoder):
         self.pIndex = pIndex
         width, height = 320, 200
         self.image = Image.new('RGBA', (width, height), (0, 0, 0, 0))
-        self.info = [0 for i in xrange(64000)] # 320 * 200的图片
+        self.info = [0 for _ in xrange(64000)] # 320 * 200的图片
         return self.video.count
 
     def finishCurrentVideo(self):
@@ -710,12 +713,12 @@ class RNG(MKFDecoder):
                     bdata -= 1
             elif bdata == 0x0b:
                 bdata = self.readByte()
-                for i in xrange(bdata + 1):
+                for _ in xrange(bdata + 1):
                     self.setByte()
                     self.setByte()
             elif bdata == 0x0c:
                 ddata = self.readShort()
-                for i in xrange(ddata + 1):
+                for _ in xrange(ddata + 1):
                     self.setByte()
                     self.setByte()
             elif bdata == 0x0d:
@@ -762,14 +765,14 @@ class RNG(MKFDecoder):
                 self.setByte()
             elif bdata == 0x11:
                 bdata = self.readByte()
-                for i in xrange(bdata + 1):
+                for _ in xrange(bdata + 1):
                     self.setByte()
                     self.setByte()
                     self.pos -= 2
                 self.pos += 2
             elif bdata == 0x12:
                 ddata = self.readShort()
-                for i in xrange(ddata + 1):
+                for _ in xrange(ddata + 1):
                     self.setByte()
                     self.setByte()
                     self.pos -= 2
@@ -851,7 +854,7 @@ class MAP(MKFDecoder):
 
     def getMapData(self, index, pIndex):
         data = self.read(index)
-        img = [[None for i in xrange(2064)] for j in xrange(2064)]
+        img = [[None for _ in xrange(2064)] for _ in xrange(2064)]
         subPlace = self.gop.subPlaces[index]
         if not data:
             return img
@@ -907,7 +910,7 @@ class Palettes:
                     self.palettes[i][j] = tuple(map(lambda x: x << 2, unpack('BBB', self.content[offset:offset + 3])))
                     offset += 3
         except IOError:
-            print 'error occurs when try to open file', path
+            print 'error occurs when try to open file pat.mkf'
         finally:
             f.close()
 
