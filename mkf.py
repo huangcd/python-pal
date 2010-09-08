@@ -9,8 +9,65 @@ Created on 2010-7-19
 import os
 import pygame
 from singleton import singleton
-from struct import unpack
+import struct
+#from struct import unpack
 from PIL import Image, ImageDraw
+import re
+ints = re.compile('I+')
+shorts = re.compile('H+')
+bytes = re.compile('B+')
+
+def unpack(tag, data):
+    if type(data) == type(1): return [data]
+    length = len(tag)
+    result = []
+    if bytes.match(tag):
+        return data[:length]
+    elif ints.match(tag):
+        for i in xrange(length):
+            i <<= 2
+            result.append((data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i])
+    elif shorts.match(tag):
+        for i in xrange(length):
+            i <<= 1
+            result.append((data[i + 1] << 8) | data[i])
+    return result            
+            
+class Data:
+    '''
+    替换string的__getslice__操作
+    '''
+    def __init__(self, data, start, end):
+        self.start = start
+        self.end = end
+        self.data = data
+        self.index = self.start
+    
+    def next(self):
+        if self.index == self.end:
+            self.index = self.start
+            raise StopIteration
+        else:
+            self.index += 1
+            return self.data[self.index - 1]
+
+    def __getitem__(self, i):
+        return self.data[self.start + i]
+
+    def __len__(self):
+        return self.end - self.start
+
+    def __getslice__(self, i, j):
+        return Data(self.data, self.start + i, self.start + j)
+
+    def __nonzero__(self):
+        return self.end >= self.start
+    
+    def __iter__(self):
+        return self
+    
+    def tolist(self):
+        return self.data[self.start:self.end]
 
 class MKFDecoder:
     '''
@@ -40,7 +97,11 @@ class MKFDecoder:
             # 优先使用path（优先从文件读取）
             if path:
                 f = open(path, 'rb')
-                self.content = f.read()
+                data = f.read()
+                length = len(data)
+                data = struct.unpack('B' * length, data)
+                self.content = Data(data, 0, len(data))
+            #self.content = data
             else:
                 self.content = data
             #===================================================================
@@ -70,7 +131,7 @@ class MKFDecoder:
 
     def check(self, index):
         assert index <= self.count and index >= 0
-            
+
     def getFileCount(self):
         return self.count
 
@@ -79,7 +140,7 @@ class MKFDecoder:
         判断文件是否为YJ_1压缩
         '''
         self.check(index)
-        return self.content[self.indexes[index]:self.indexes[index] + 4] == '\x59\x4A\x5F\x31'
+        return unpack('I', self.content[self.indexes[index]:self.indexes[index] + 4])[0] == 0x315f4a59
 
     def read(self, index):
         '''
@@ -118,7 +179,7 @@ class YJ1Decoder:
         ext_length = 0
         if not data:
             print 'no data to decode'
-            return ''
+            return data
         self.data = data
         self.dataLen = len(data)
         if self.readInt() != 0x315f4a59: # '1' '_' 'J' 'Y'
@@ -133,7 +194,7 @@ class YJ1Decoder:
         prev_dst_pos = self.di
 
         blocks = self.readByte(0xC)
-        
+
         self.expand()
 
         prev_src_pos = self.si
@@ -145,7 +206,7 @@ class YJ1Decoder:
                 self.si = prev_src_pos
                 self.di = prev_dst_pos
             self.first = 0
-            
+
             ext_length = self.readShort()
             pack_length = self.readShort()
 
@@ -167,7 +228,7 @@ class YJ1Decoder:
                 self.flags = ((self.readShort() << 16) | self.readShort()) & 0xffffffff
                 self.analysis()
 
-        return ''.join([x for x in self.finalData if x != 0])
+        return self.finalData#''.join([x for x in self.finalData if x != 0])
 
     def analysis(self):
         loop = 0
@@ -186,7 +247,7 @@ class YJ1Decoder:
                     if self.assist[m] == 0:
                         break
                     m = self.table[m]
-                self.finalData[self.di] = chr(self.table[m] & 0xff)
+                self.finalData[self.di] = self.table[m] & 0xff
                 self.di += 1
             loop = self.decodeloop()
             if loop == 0xffff:
@@ -242,12 +303,12 @@ class YJ1Decoder:
     def get_topflag(self, x, y):
         t = x >> 31
         return t & 0xffffffff
-    
+
     def trans_topflag_to(self, x, y, z, n):
         for _ in xrange(n):
             x <<= 1
             x |= self.get_topflag(y, z)
-            y  = (y << 1) & 0xffffffff
+            y = (y << 1) & 0xffffffff
             z -= 1
         return x & 0xffffffff
 
@@ -255,7 +316,7 @@ class YJ1Decoder:
         if self.flagnum < x:
             self.flags |= self.readShort() << (0x10 - self.flagnum) & 0xffffffff
             self.flagnum += 0x10
-            
+
     def decodeloop(self):
         self.update(3)
         loop = self.key_0x12
@@ -307,7 +368,7 @@ class YJ1Decoder:
                 self.flags = (self.flags << t) & 0xffffffff
                 self.flagnum -= t
         return numbytes
-                
+
 
     def expand(self):
         loop = self.readByte(0xF)
@@ -342,11 +403,12 @@ class RLEDecoder(MKFDecoder):
             return (0, 0)
         return unpack('HH', data[4:8])
 
-    def getImageData(self, index, pIndex):
+    def getImageData(self, index, pIndex, offset = 8):
         '''
         返回给定调色板之后渲染出来的图片数据（每个点上要么是None，要么是一个三维RGB值）
         @param index：图片索引
         @param pIndex: 调色板索引
+        @param offset: 兼容SubPlace（SubPlace的offset是4）
         '''
         width, height = self.getSize(index)
         if not width or not height:
@@ -354,7 +416,6 @@ class RLEDecoder(MKFDecoder):
         img = [[None for _ in xrange(width)] for _ in xrange(height)]
         _data = self.read(index)
         data = unpack('B' * len(_data), _data)
-        offset = 8
         line = 0
         x = 0
         palette = self.palette.getPalette(pIndex)
@@ -370,7 +431,7 @@ class RLEDecoder(MKFDecoder):
                     flag -= num
                     offset += 1
                     # very special case! 
-                    if num == 0x7F: continue 
+                    if num == 0x7F: continue
                 if flag == 0: break
                 num = data[offset] # 不透明颜色个数
                 offset += 1
@@ -391,7 +452,7 @@ class RLEDecoder(MKFDecoder):
         @param pIndex: 调色板索引
         '''
         width, height = self.getSize(index)
-        if not width or not height: 
+        if not width or not height:
             return None
         data = self.getImageData(index, pIndex)
         img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
@@ -399,39 +460,6 @@ class RLEDecoder(MKFDecoder):
         for x in xrange(width):
             for y in xrange(height):
                 if data[y][x]: dr.point((x, y), data[y][x])
-        return img
-        img = Image.new('RGBA', self.getSize(index), (0, 0, 0, 0))
-        dr = ImageDraw.Draw(img)
-        # 一次unpack所有数据
-        _data = self.read(index)
-        data = unpack('B' * len(_data), _data)
-        offset = 8
-        line = 0
-        x = 0
-        palette = self.palette.getPalette(pIndex)
-        while line < height:
-            flag = width
-            # 处理一行数据
-            while flag > 0:
-                num = data[offset]
-                # 透明颜色个数
-                if num > 0x80:
-                    num -= 0x80
-                    x += num
-                    flag -= num
-                    offset += 1
-                    # very special case! 
-                    if num == 0x7F: continue 
-                if flag == 0: break
-                num = data[offset] # 不透明颜色个数
-                offset += 1
-                for k in xrange(num):
-                    dr.point((x, line), palette[data[offset + k]])
-                    x += 1
-                offset += num
-                flag -= num
-            line += 1
-            x = 0
         return img
 
 @singleton
@@ -502,6 +530,15 @@ class SubPlace(RLEDecoder):
         self.count -= 1
         self.cache = {}
         self.palette = Palettes()
+        
+    def getSize(self, index):
+        data = self.read(index)
+        if len(data) < 4:
+            return (0, 0)
+        return unpack('HH', data[:4])
+    
+    def getImageData(self, index, pIndex):
+        return RLEDecoder.getImageData(self, index, pIndex, 4)
 
     def read(self, index):
         '''
@@ -511,7 +548,7 @@ class SubPlace(RLEDecoder):
         self.check(index + 1)
         if not self.cache.has_key(index):
             data = self.content[self.indexes[index] << 1:self.indexes[index + 1] << 1]
-            self.cache[index] = data[:4] + data
+            self.cache[index] = data
         return self.cache[index]
 
 class GOPLike(MKFDecoder):
@@ -543,7 +580,6 @@ class GOPLike(MKFDecoder):
         '''
         return self.subPlaces[fIndex].getImageData(index, pIndex)
 
-
 @singleton
 class GOPS(GOPLike):
     '''
@@ -568,7 +604,7 @@ class F(GOPLike):
     '''
     def __init__(self):
         GOPLike.__init__(self, 'f.mkf')
-        
+
 @singleton
 class ABC(GOPLike):
     '''
@@ -576,7 +612,7 @@ class ABC(GOPLike):
     '''
     def __init__(self):
         GOPLike.__init__(self, 'abc.mkf')
-        
+
 @singleton
 class MGO(GOPLike):
     '''
@@ -584,7 +620,7 @@ class MGO(GOPLike):
     '''
     def __init__(self):
         GOPLike.__init__(self, 'mgo.mkf')
-        
+
 @singleton
 class FBP(MKFDecoder):
     '''
@@ -610,7 +646,7 @@ class FBP(MKFDecoder):
     def getImage(self, index, pIndex):
         palette = self.palette.getPalette(pIndex)
         data = self.read(index)
-        data = unpack('B' * len(data), data) 
+        data = unpack('B' * len(data), data)
         width, height = 320, 200
         img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
         dr = ImageDraw.Draw(img)
@@ -864,8 +900,8 @@ class MAP(MKFDecoder):
                 idx = line * 512 + column
                 low, high = unpack('BB', data[idx:idx + 2])
                 high = (high >> 4) & 0x1
-                rIndex = (high << 8) | low                
-                bg = subPlace.getImageData(rIndex, pIndex) 
+                rIndex = (high << 8) | low
+                bg = subPlace.getImageData(rIndex, pIndex)
                 low, high = unpack('BB', data[idx + 2: idx + 4])
                 high = (high >> 4) & 0x1
                 rIndex = ((high << 8) | low) - 1
@@ -884,7 +920,7 @@ class MAP(MKFDecoder):
         return img
 
 @singleton
-class Palettes: 
+class Palettes:
     '''
     pat.mkf文件不同于其它.mkf文件，其文件的组织结构为从0x28开始，每768字节构成一个子文件，
     共有11个子文件，在这768字节中，其按照Red、 Green、Blue颜色分量进行存储，共有256组颜色
@@ -896,7 +932,10 @@ class Palettes:
     def __init__(self):
         try:
             f = open('pat.mkf', 'rb')
-            self.content = f.read()
+            data = f.read()
+            length = len(data)
+            data = struct.unpack('B' * length, data)
+            self.content = Data(data, 0, length)
             self.offset = 0x28
             self.maxIndex = 11
             self.fileSize = 0x300
@@ -907,7 +946,8 @@ class Palettes:
                 offset = self.offset + i * self.fileSize
                 for j in xrange(self.fileSize / 3):
                     # RGB
-                    self.palettes[i][j] = tuple(map(lambda x: x << 2, unpack('BBB', self.content[offset:offset + 3])))
+                    self.palettes[i][j] = (self.content[offset], self.content[offset + 1], self.content[offset + 2])
+                    # tuple(map(lambda x: x << 2, unpack('BBB', self.content[offset:offset + 3])))
                     offset += 3
         except IOError:
             print 'error occurs when try to open file pat.mkf'
