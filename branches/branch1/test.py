@@ -5,9 +5,14 @@
 Created on 2010-7-21
 @author: huangcd.thu@gmail.com
 '''
-from mkf import *
 from threading import Thread
 from time import clock
+from mkf import Ball, RGM, Midi, GOPS, Fire, F, ABC, MGO, YJ1Decoder, FBP, RNG,\
+    MAP
+import os
+import pygame
+import Image
+import ImageDraw
 
 def test(func):
     def __func(*arg, **args):
@@ -195,7 +200,7 @@ def test_all(show):
         obj = ABC()
         img = obj.getImage(1, 0, 0)
         if show: img.show()
-    tt_abc(show)
+    #tt_abc(show)
     
     @test
     def tt_ball(show):
@@ -241,16 +246,9 @@ def test_all(show):
     def tt_mgo(show):
         print 'test mgo'
         obj = MGO()
-        img = obj.subPlaces[2].getImage(0, 0)
+        img = obj.subPlaces[2].getImage(1, 0)
         if show: img.show()
     tt_mgo(show)
-    
-    @test
-    def tt_midi(show):
-        print 'test midi'
-        obj = Midi()
-        if show: obj.play(1, 20)
-    tt_midi(show)
     
     @test
     def tt_rgm(show):
@@ -258,7 +256,7 @@ def test_all(show):
         obj = RGM()
         img = obj.getImage(2, 0)
         if show: img.show()
-    tt_f(show)
+    tt_rgm(show)
     
     @test
     def tt_rng(show):
@@ -267,8 +265,16 @@ def test_all(show):
         obj.startVideo(1, 0)
         img = obj.getNextFrame()
         if show: img.show()
+    tt_rng(show)
+    
+    @test
+    def tt_midi(show):
+        print 'test midi'
+        obj = Midi()
+        if show: obj.play(10, 20)
+    tt_midi(show)
         
 
 if __name__ == '__main__':
     os.chdir(r'..\..')
-    test_all(True)
+    test_all(False)
