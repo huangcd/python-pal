@@ -5,9 +5,14 @@
 Created on 2010-7-21
 @author: huangcd.thu@gmail.com
 '''
-from mkf import *
 from threading import Thread
 from time import clock
+from mkf import Ball, RGM, Midi, GOPS, Fire, F, ABC, MGO, YJ1Decoder, FBP, RNG,\
+    MAP
+import os, sys, traceback
+import pygame
+import Image
+import ImageDraw
 
 def test(func):
     def __func(*arg, **args):
@@ -184,8 +189,17 @@ def test_map():
     if not os.path.exists(path): os.mkdir(path)
     for i in xrange(obj.count):
         print i
-        img = obj.getMap(i, 0)
-        img.save(r'%s\%d.png' % (path, i), 'PNG')
+        if os.path.exists(r'%s\%d.png' % (path, i)): continue
+        try:
+            img = obj.getMap(i, 0)
+            img.save(r'%s\%d.png' % (path, i), 'PNG')
+        except AssertionError:
+            traceback.print_exc()
+            print '========================================='
+            print sys.exc_info()
+            img = obj.read(i)
+            with open(r'%s\%d.dat' % (path, i), 'wb') as f:
+                f.write(img)
         
 @test
 def test_all(show):
@@ -195,7 +209,7 @@ def test_all(show):
         obj = ABC()
         img = obj.getImage(1, 0, 0)
         if show: img.show()
-    tt_abc(show)
+    #tt_abc(show)
     
     @test
     def tt_ball(show):
@@ -246,13 +260,6 @@ def test_all(show):
     tt_mgo(show)
     
     @test
-    def tt_midi(show):
-        print 'test midi'
-        obj = Midi()
-        if show: obj.play(1, 20)
-    tt_midi(show)
-    
-    @test
     def tt_rgm(show):
         print 'test rgm'
         obj = RGM()
@@ -267,8 +274,16 @@ def test_all(show):
         obj.startVideo(1, 0)
         img = obj.getNextFrame()
         if show: img.show()
+    
+    @test
+    def tt_midi(show):
+        print 'test midi'
+        obj = Midi()
+        if show: obj.play(10, 20)
+    tt_midi(show)
         
 
 if __name__ == '__main__':
-    os.chdir(r'..\..')
-    test_all(True)
+    os.chdir(r'..')
+    test_map()
+
