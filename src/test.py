@@ -18,7 +18,7 @@ def test(func):
     def __func(*arg, **args):
         start = clock()
         func(*arg, **args)
-        print 'total time used: %fs' % (clock() - start)
+        print 'total time used for %s: %fs' % (str(func), clock() - start)
     return __func
 
 
@@ -44,7 +44,7 @@ def test_ball():
     b = Ball()
     for i in xrange(b.count):
         img = b.getImage(i, 0)
-        img.save(r'.\ball\%d.png' % i, 'PNG')
+        img.save(r'./ball/%d.png' % i, 'PNG')
 
 @test
 def test_rgm():
@@ -52,19 +52,19 @@ def test_rgm():
     for i in xrange(r.count):
         img = r.getImage(i, 0)
         if img:
-            img.save(r'.\rgm\%d.png' % i, 'PNG')
+            img.save(r'./rgm/%d.png' % i, 'PNG')
 
 @test
 def test_gop():
     g = GOPS()
-    path = r'.\gop'
+    path = r'./gop'
     if not os.path.exists(path): os.mkdir(path)
     for i, gop in enumerate(g.subPlaces):
-        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        if not os.path.exists(r'%s/%d' % (path, i)): os.mkdir(r'%s/%d' % (path, i))
         for j in xrange(gop.count):
             img = gop.getImage(j, 0)
             if img:
-                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                img.save(r'%s/%d/%d.png' % (path, i, j), 'PNG')
 
 @test
 def show_image_using_pygame():
@@ -88,54 +88,54 @@ def show_image_using_pygame():
 @test
 def test_fire():
     f = Fire()
-    path = r'.\fire'
+    path = r'./fire'
     if not os.path.exists(path): os.mkdir(path)
     for i, fire in enumerate(f.subPlaces):
-        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        if not os.path.exists(r'%s/%d' % (path, i)): os.mkdir(r'%s/%d' % (path, i))
         for j in xrange(fire.count):
             img = fire.getImage(j, 0)
             if img:
-                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                img.save(r'%s/%d/%d.png' % (path, i, j), 'PNG')
             
 @test
 def test_f():
     f = F()
-    path = r'.\f'
+    path = r'./f'
     if not os.path.exists(path): os.mkdir(path)
     for i, _f in enumerate(f.subPlaces):
-        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        if not os.path.exists(r'%s/%d' % (path, i)): os.mkdir(r'%s/%d' % (path, i))
         for j in xrange(_f.count):
             img = _f.getImage(j, 0)
             if img:
-                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                img.save(r'%s/%d/%d.png' % (path, i, j), 'PNG')
                 
 @test
 def test_ABC():
     f = ABC()
-    path = r'.\abc'
+    path = r'./abc'
     if not os.path.exists(path): os.mkdir(path)
     for i, _f in enumerate(f.subPlaces):
-        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        if not os.path.exists(r'%s/%d' % (path, i)): os.mkdir(r'%s/%d' % (path, i))
         for j in xrange(_f.count):
             img = _f.getImage(j, 0)
             if img:
-                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                img.save(r'%s/%d/%d.png' % (path, i, j), 'PNG')
                 
 @test
 def test_MGO():
     f = MGO()
-    path = r'.\mgo'
+    path = r'./mgo'
     if not os.path.exists(path): os.mkdir(path)
     for i, _f in enumerate(f.subPlaces):
-        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        if not os.path.exists(r'%s/%d' % (path, i)): os.mkdir(r'%s/%d' % (path, i))
         for j in xrange(_f.count):
             img = _f.getImage(j, 0)
             if img:
-                img.save(r'%s\%d\%d.png' % (path, i, j), 'PNG')
+                img.save(r'%s/%d/%d.png' % (path, i, j), 'PNG')
 
 @test
 def debug_yj1():
-    path = "D:\\programming\\pypal\\fire\\11.dat"
+    path = "D://programming//pypal//fire//11.dat"
     with open(path, 'rb') as f: data = f.read()
     yj1 = YJ1Decoder()
     yj1.vec = []
@@ -148,26 +148,26 @@ def debug_yj1():
 @test
 def test_FBP():
     obj = FBP()
-    path = r'.\fbp'
+    path = r'./fbp'
     if not os.path.exists(path): os.mkdir(path)
     for i in xrange(obj.count):
         if i == 63:
             img = obj.getImage(i, 9)
-            img.save(r'%s\%d.png' % (path, i), 'PNG')
+            img.save(r'%s/%d.png' % (path, i), 'PNG')
 
 @test
 def test_RNG():
     f = RNG()
-    path = r'.\rng'
+    path = r'./rng'
     if not os.path.exists(path): os.mkdir(path)
     for i in xrange(f.count):
-        if not os.path.exists(r'%s\%d' % (path, i)): os.mkdir(r'%s\%d' % (path, i))
+        if not os.path.exists(r'%s/%d' % (path, i)): os.mkdir(r'%s/%d' % (path, i))
         f.startVideo(i, 0)
         print f.video.count
         while f.hasNextFrame():
             print f.frameIndex
             img = f.getNextFrame()
-            img.save(r'%s\%d\%s.png' % (path, i, str(f.frameIndex).zfill(10)), 'PNG')
+            img.save(r'%s/%d/%s.png' % (path, i, str(f.frameIndex).zfill(10)), 'PNG')
 
 @test
 def test_imageData():
@@ -185,20 +185,20 @@ def test_imageData():
 @test
 def test_map():
     obj = MAP()
-    path = r'.\map'
+    path = r'./map'
     if not os.path.exists(path): os.mkdir(path)
     for i in xrange(obj.count):
         print i
-        if os.path.exists(r'%s\%d.png' % (path, i)): continue
+        if os.path.exists(r'%s/%d.png' % (path, i)): continue
         try:
             img = obj.getMap(i, 0)
-            img.save(r'%s\%d.png' % (path, i), 'PNG')
+            img.save(r'%s/%d.png' % (path, i), 'PNG')
         except AssertionError:
             traceback.print_exc()
             print '========================================='
             print sys.exc_info()
             img = obj.read(i)
-            with open(r'%s\%d.dat' % (path, i), 'wb') as f:
+            with open(r'%s/%d.dat' % (path, i), 'wb') as f:
                 f.write(img)
         
 @test
@@ -274,6 +274,7 @@ def test_all(show):
         obj.startVideo(1, 0)
         img = obj.getNextFrame()
         if show: img.show()
+    tt_rng(show)
     
     @test
     def tt_midi(show):
@@ -284,6 +285,11 @@ def test_all(show):
         
 
 if __name__ == '__main__':
+    try:
+        import psyco
+        psyco.full()
+    except:
+        print "fail to use psyco"
     os.chdir(r'..')
-    test_map()
+    test_all(0)
 
