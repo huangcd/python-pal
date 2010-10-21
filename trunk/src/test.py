@@ -9,6 +9,7 @@ from threading import Thread
 from time import clock
 from mkf import Ball, RGM, Midi, GOPS, Fire, F, ABC, MGO, YJ1Decoder, FBP, RNG,\
     MAP
+from setup import Setup
 import os, sys, traceback
 import pygame
 import Image
@@ -282,6 +283,12 @@ def test_all(show):
         obj = Midi()
         if show: obj.play(10, 20)
     tt_midi(show)
+
+def test_setup():
+    setup = Setup()
+    setup.decode()
+    setup.encode()
+    print setup.__dict__
         
 
 if __name__ == '__main__':
@@ -291,5 +298,6 @@ if __name__ == '__main__':
     except:
         print "fail to use psyco"
     os.chdir(r'..')
-    test_all(0)
+    #test_all(0)
+    test_setup()
 
