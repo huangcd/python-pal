@@ -4,115 +4,290 @@
 !_TAG_PROGRAM_NAME	Exuberant Ctags	//
 !_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
 !_TAG_PROGRAM_VERSION	5.8	//
-ABC	.\mkf.py	/^class ABC(GOPLike):$/;"	c
-Ball	.\mkf.py	/^class Ball(RLEDecoder):$/;"	c
-F	.\mkf.py	/^class F(GOPLike):$/;"	c
-FBP	.\mkf.py	/^class FBP(MKFDecoder):$/;"	c
-Fire	.\mkf.py	/^class Fire(GOPLike):$/;"	c
-GOPLike	.\mkf.py	/^class GOPLike(MKFDecoder):$/;"	c
-GOPS	.\mkf.py	/^class GOPS(GOPLike):$/;"	c
-Image	.\mkf.py	/^from PIL import Image, ImageDraw$/;"	i
-Image	.\test.py	/^    from PIL import Image, ImageDraw$/;"	i
-ImageDraw	.\mkf.py	/^from PIL import Image, ImageDraw$/;"	i
-ImageDraw	.\test.py	/^    from PIL import Image, ImageDraw$/;"	i
-MAP	.\mkf.py	/^class MAP(MKFDecoder):$/;"	c
-MGO	.\mkf.py	/^class MGO(GOPLike):$/;"	c
-MKFDecoder	.\mkf.py	/^class MKFDecoder:$/;"	c
-Midi	.\mkf.py	/^class Midi(MKFDecoder):$/;"	c
-MidiPlayer	.\test.py	/^class MidiPlayer(Thread):$/;"	c
-Palettes	.\mkf.py	/^class Palettes: $/;"	c
-RGM	.\mkf.py	/^class RGM(RLEDecoder):$/;"	c
-RLEDecoder	.\mkf.py	/^class RLEDecoder(MKFDecoder):$/;"	c
-RNG	.\mkf.py	/^class RNG(MKFDecoder):$/;"	c
-SubPlace	.\mkf.py	/^class SubPlace(RLEDecoder):$/;"	c
-Thread	.\test.py	/^from threading import Thread$/;"	i
-YJ1Decoder	.\mkf.py	/^class YJ1Decoder:$/;"	c
-__func	.\test.py	/^    def __func(*arg, **args):$/;"	f	function:test	file:
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:ABC
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Ball
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:F
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:FBP
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Fire
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:GOPS
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:MAP
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:MGO
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Midi
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:Palettes
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:RGM
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:RNG
-__init__	.\mkf.py	/^    def __init__(self):$/;"	m	class:YJ1Decoder
-__init__	.\mkf.py	/^    def __init__(self, data):$/;"	m	class:SubPlace
-__init__	.\mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:MKFDecoder
-__init__	.\mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:RLEDecoder
-__init__	.\mkf.py	/^    def __init__(self, path):$/;"	m	class:GOPLike
-__init__	.\test.py	/^	def __init__(self):$/;"	m	class:MidiPlayer
-analysis	.\mkf.py	/^    def analysis(self):$/;"	m	class:YJ1Decoder
-blit	.\mkf.py	/^    def blit(self):$/;"	m	class:RNG
-check	.\mkf.py	/^    def check(self, index):$/;"	m	class:MKFDecoder
-check	.\mkf.py	/^    def check(self, pIndex, cIndex = 0):$/;"	m	class:Palettes
-clock	.\test.py	/^from time import clock$/;"	i
-debug_yj1	.\test.py	/^def debug_yj1():$/;"	f
-decode	.\mkf.py	/^    def decode(self, data):$/;"	m	class:YJ1Decoder
-decodeloop	.\mkf.py	/^    def decodeloop(self):$/;"	m	class:YJ1Decoder
-decodenumbytes	.\mkf.py	/^    def decodenumbytes(self):$/;"	m	class:YJ1Decoder
-expand	.\mkf.py	/^    def expand(self):$/;"	m	class:YJ1Decoder
-finishCurrentVideo	.\mkf.py	/^    def finishCurrentVideo(self):$/;"	m	class:RNG
-getColor	.\mkf.py	/^    def getColor(self, pIndex, cIndex):$/;"	m	class:Palettes
-getCurrentFrame	.\mkf.py	/^    def getCurrentFrame(self):$/;"	m	class:RNG
-getFrameCount	.\mkf.py	/^    def getFrameCount(self):$/;"	m	class:RNG
-getImage	.\mkf.py	/^    def getImage(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
-getImage	.\mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:FBP
-getImage	.\mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:RLEDecoder
-getImageData	.\mkf.py	/^    def getImageData(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
-getImageData	.\mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:FBP
-getImageData	.\mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:RLEDecoder
-getMap	.\mkf.py	/^    def getMap(self, index, pIndex):$/;"	m	class:MAP
-getMapData	.\mkf.py	/^    def getMapData(self, index, pIndex):$/;"	m	class:MAP
-getNextFrame	.\mkf.py	/^    def getNextFrame(self):$/;"	m	class:RNG
-getPalette	.\mkf.py	/^    def getPalette(self, index):$/;"	m	class:Palettes
-getSize	.\mkf.py	/^    def getSize(self, index):$/;"	m	class:RLEDecoder
-get_instance	.\singleton.py	/^    def get_instance(*arg, **args):$/;"	f	function:singleton
-get_topflag	.\mkf.py	/^    def get_topflag(self, x, y):$/;"	m	class:YJ1Decoder
-hasNextFrame	.\mkf.py	/^    def hasNextFrame(self):$/;"	m	class:RNG
-isYJ1	.\mkf.py	/^    def isYJ1(self, index):$/;"	m	class:MKFDecoder
-move_top	.\mkf.py	/^    def move_top(self, x):$/;"	m	class:YJ1Decoder
-os	.\mkf.py	/^import os, struct, sys, time$/;"	i
-os	.\test.py	/^    import os$/;"	i
-play	.\mkf.py	/^    def play(self, index, ticks = 20):$/;"	m	class:Midi
-play_midi_in_loop	.\test.py	/^def play_midi_in_loop():$/;"	f
-pygame	.\mkf.py	/^import pygame$/;"	i
-pygame	.\test.py	/^    import pygame$/;"	i
-read	.\mkf.py	/^    def read(self, index):$/;"	m	class:MKFDecoder
-read	.\mkf.py	/^    def read(self, index):$/;"	m	class:SubPlace
-readByte	.\mkf.py	/^    def readByte(self):$/;"	m	class:RNG
-readByte	.\mkf.py	/^    def readByte(self, si = None):$/;"	m	class:YJ1Decoder
-readInt	.\mkf.py	/^    def readInt(self, si = None):$/;"	m	class:YJ1Decoder
-readShort	.\mkf.py	/^    def readShort(self):$/;"	m	class:RNG
-readShort	.\mkf.py	/^    def readShort(self, si = None):$/;"	m	class:YJ1Decoder
-run	.\test.py	/^	def run(self):$/;"	m	class:MidiPlayer
-save	.\mkf.py	/^    def save(self, index, path):$/;"	m	class:Midi
-setByte	.\mkf.py	/^    def setByte(self):$/;"	m	class:RNG
-show_image_using_pygame	.\test.py	/^def show_image_using_pygame():$/;"	f
-singleton	.\mkf.py	/^from singleton import singleton$/;"	i
-singleton	.\singleton.py	/^def singleton(cls):$/;"	f
-startVideo	.\mkf.py	/^    def startVideo(self, index, pIndex):$/;"	m	class:RNG
-stop	.\mkf.py	/^    def stop(self, index):$/;"	m	class:Midi
-struct	.\mkf.py	/^import os, struct, sys, time$/;"	i
-sys	.\mkf.py	/^import os, struct, sys, time$/;"	i
-test	.\test.py	/^def test(func):$/;"	f
-test_ABC	.\test.py	/^def test_ABC():$/;"	f
-test_FBP	.\test.py	/^def test_FBP():$/;"	f
-test_MGO	.\test.py	/^def test_MGO():$/;"	f
-test_RNG	.\test.py	/^def test_RNG():$/;"	f
-test_ball	.\test.py	/^def test_ball():$/;"	f
-test_f	.\test.py	/^def test_f():$/;"	f
-test_fire	.\test.py	/^def test_fire():$/;"	f
-test_gop	.\test.py	/^def test_gop():$/;"	f
-test_imageData	.\test.py	/^def test_imageData():$/;"	f
-test_map	.\test.py	/^def test_map():$/;"	f
-test_palette	.\test.py	/^def test_palette():$/;"	f
-test_rgm	.\test.py	/^def test_rgm():$/;"	f
-time	.\mkf.py	/^import os, struct, sys, time$/;"	i
-trans_topflag_to	.\mkf.py	/^    def trans_topflag_to(self, x, y, z, n):$/;"	m	class:YJ1Decoder
-unpack	.\mkf.py	/^from struct import unpack$/;"	i
-update	.\mkf.py	/^    def update(self, x):$/;"	m	class:YJ1Decoder
+ABC	branch1/mkf.py	/^class ABC(GOPLike):$/;"	c
+ABC	branch1/test.py	/^    MAP$/;"	i
+ABC	mkf.py	/^class ABC(GOPLike):$/;"	c
+ABC	test.py	/^    MAP$/;"	i
+Ball	branch1/mkf.py	/^class Ball(RLEDecoder):$/;"	c
+Ball	branch1/test.py	/^    MAP$/;"	i
+Ball	mkf.py	/^class Ball(RLEDecoder):$/;"	c
+Ball	test.py	/^    MAP$/;"	i
+Data	branch1/mkf.py	/^class Data:$/;"	c
+F	branch1/mkf.py	/^class F(GOPLike):$/;"	c
+F	branch1/test.py	/^    MAP$/;"	i
+F	mkf.py	/^class F(GOPLike):$/;"	c
+F	test.py	/^    MAP$/;"	i
+FBP	branch1/mkf.py	/^class FBP(MKFDecoder):$/;"	c
+FBP	branch1/test.py	/^    MAP$/;"	i
+FBP	mkf.py	/^class FBP(MKFDecoder):$/;"	c
+FBP	test.py	/^    MAP$/;"	i
+Fire	branch1/mkf.py	/^class Fire(GOPLike):$/;"	c
+Fire	branch1/test.py	/^    MAP$/;"	i
+Fire	mkf.py	/^class Fire(GOPLike):$/;"	c
+Fire	test.py	/^    MAP$/;"	i
+GOPLike	branch1/mkf.py	/^class GOPLike(MKFDecoder):$/;"	c
+GOPLike	mkf.py	/^class GOPLike(MKFDecoder):$/;"	c
+GOPS	branch1/mkf.py	/^class GOPS(GOPLike):$/;"	c
+GOPS	branch1/test.py	/^    MAP$/;"	i
+GOPS	mkf.py	/^class GOPS(GOPLike):$/;"	c
+GOPS	test.py	/^    MAP$/;"	i
+Image	branch1/mkf.py	/^from PIL import Image, ImageDraw$/;"	i
+Image	branch1/test.py	/^import Image$/;"	i
+Image	mkf.py	/^from PIL import Image, ImageDraw$/;"	i
+Image	test.py	/^import Image$/;"	i
+ImageDraw	branch1/mkf.py	/^from PIL import Image, ImageDraw$/;"	i
+ImageDraw	branch1/test.py	/^import ImageDraw$/;"	i
+ImageDraw	mkf.py	/^from PIL import Image, ImageDraw$/;"	i
+ImageDraw	test.py	/^import ImageDraw$/;"	i
+MAP	branch1/mkf.py	/^class MAP(MKFDecoder):$/;"	c
+MAP	branch1/test.py	/^    MAP$/;"	i
+MAP	mkf.py	/^class MAP(MKFDecoder):$/;"	c
+MAP	test.py	/^    MAP$/;"	i
+MGO	branch1/mkf.py	/^class MGO(GOPLike):$/;"	c
+MGO	branch1/test.py	/^    MAP$/;"	i
+MGO	mkf.py	/^class MGO(GOPLike):$/;"	c
+MGO	test.py	/^    MAP$/;"	i
+MKFDecoder	branch1/mkf.py	/^class MKFDecoder:$/;"	c
+MKFDecoder	mkf.py	/^class MKFDecoder:$/;"	c
+Midi	branch1/mkf.py	/^class Midi(MKFDecoder):$/;"	c
+Midi	branch1/test.py	/^    MAP$/;"	i
+Midi	mkf.py	/^class Midi(MKFDecoder):$/;"	c
+Midi	test.py	/^    MAP$/;"	i
+MidiPlayer	branch1/test.py	/^class MidiPlayer(Thread):$/;"	c
+MidiPlayer	test.py	/^class MidiPlayer(Thread):$/;"	c
+Palettes	branch1/mkf.py	/^class Palettes:$/;"	c
+Palettes	mkf.py	/^class Palettes: $/;"	c
+RGM	branch1/mkf.py	/^class RGM(RLEDecoder):$/;"	c
+RGM	branch1/test.py	/^    MAP$/;"	i
+RGM	mkf.py	/^class RGM(RLEDecoder):$/;"	c
+RGM	test.py	/^    MAP$/;"	i
+RLEDecoder	branch1/mkf.py	/^class RLEDecoder(MKFDecoder):$/;"	c
+RLEDecoder	mkf.py	/^class RLEDecoder(MKFDecoder):$/;"	c
+RNG	branch1/mkf.py	/^class RNG(MKFDecoder):$/;"	c
+RNG	branch1/test.py	/^    MAP$/;"	i
+RNG	mkf.py	/^class RNG(MKFDecoder):$/;"	c
+RNG	test.py	/^    MAP$/;"	i
+Setup	setup.py	/^class Setup:$/;"	c
+SubPlace	branch1/mkf.py	/^class SubPlace(RLEDecoder):$/;"	c
+SubPlace	mkf.py	/^class SubPlace(RLEDecoder):$/;"	c
+Thread	branch1/test.py	/^from threading import Thread$/;"	i
+Thread	test.py	/^from threading import Thread$/;"	i
+YJ1Decoder	branch1/mkf.py	/^class YJ1Decoder:$/;"	c
+YJ1Decoder	branch1/test.py	/^    MAP$/;"	i
+YJ1Decoder	mkf.py	/^class YJ1Decoder:$/;"	c
+YJ1Decoder	test.py	/^    MAP$/;"	i
+__func	branch1/test.py	/^    def __func(*arg, **args):$/;"	f	function:test	file:
+__func	test.py	/^    def __func(*arg, **args):$/;"	f	function:test	file:
+__getitem__	branch1/mkf.py	/^    def __getitem__(self, i):$/;"	m	class:Data	file:
+__getslice__	branch1/mkf.py	/^    def __getslice__(self, i, j):$/;"	m	class:Data	file:
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:ABC
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:Ball
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:F
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:FBP
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:Fire
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:GOPS
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:MAP
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:MGO
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:Midi
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:Palettes
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:RGM
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:RNG
+__init__	branch1/mkf.py	/^    def __init__(self):$/;"	m	class:YJ1Decoder
+__init__	branch1/mkf.py	/^    def __init__(self, data):$/;"	m	class:SubPlace
+__init__	branch1/mkf.py	/^    def __init__(self, data, start, end):$/;"	m	class:Data
+__init__	branch1/mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:MKFDecoder
+__init__	branch1/mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:RLEDecoder
+__init__	branch1/mkf.py	/^    def __init__(self, path):$/;"	m	class:GOPLike
+__init__	branch1/test.py	/^    def __init__(self):$/;"	m	class:MidiPlayer
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:ABC
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:Ball
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:F
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:FBP
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:Fire
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:GOPS
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:MAP
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:MGO
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:Midi
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:Palettes
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:RGM
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:RNG
+__init__	mkf.py	/^    def __init__(self):$/;"	m	class:YJ1Decoder
+__init__	mkf.py	/^    def __init__(self, data):$/;"	m	class:SubPlace
+__init__	mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:MKFDecoder
+__init__	mkf.py	/^    def __init__(self, path = None, data = None):$/;"	m	class:RLEDecoder
+__init__	mkf.py	/^    def __init__(self, path):$/;"	m	class:GOPLike
+__init__	test.py	/^    def __init__(self):$/;"	m	class:MidiPlayer
+__iter__	branch1/mkf.py	/^    def __iter__(self):$/;"	m	class:Data	file:
+__len__	branch1/mkf.py	/^    def __len__(self):$/;"	m	class:Data	file:
+__nonzero__	branch1/mkf.py	/^    def __nonzero__(self):$/;"	m	class:Data	file:
+analysis	branch1/mkf.py	/^    def analysis(self):$/;"	m	class:YJ1Decoder
+analysis	mkf.py	/^    def analysis(self):$/;"	m	class:YJ1Decoder
+blit	branch1/mkf.py	/^    def blit(self):$/;"	m	class:RNG
+blit	mkf.py	/^    def blit(self):$/;"	m	class:RNG
+bytes	branch1/mkf.py	/^bytes = re.compile('B+')$/;"	v
+check	branch1/mkf.py	/^    def check(self, index):$/;"	m	class:MKFDecoder
+check	branch1/mkf.py	/^    def check(self, pIndex, cIndex = 0):$/;"	m	class:Palettes
+check	mkf.py	/^    def check(self, index):$/;"	m	class:MKFDecoder
+check	mkf.py	/^    def check(self, pIndex, cIndex = 0):$/;"	m	class:Palettes
+clock	branch1/test.py	/^from time import clock$/;"	i
+clock	test.py	/^from time import clock$/;"	i
+debug_yj1	branch1/test.py	/^def debug_yj1():$/;"	f
+debug_yj1	test.py	/^def debug_yj1():$/;"	f
+decode	branch1/mkf.py	/^    def decode(self, data):$/;"	m	class:YJ1Decoder
+decode	mkf.py	/^    def decode(self, data):$/;"	m	class:YJ1Decoder
+decode	setup.py	/^    def decode():$/;"	m	class:Setup
+decodeloop	branch1/mkf.py	/^    def decodeloop(self):$/;"	m	class:YJ1Decoder
+decodeloop	mkf.py	/^    def decodeloop(self):$/;"	m	class:YJ1Decoder
+decodenumbytes	branch1/mkf.py	/^    def decodenumbytes(self):$/;"	m	class:YJ1Decoder
+decodenumbytes	mkf.py	/^    def decodenumbytes(self):$/;"	m	class:YJ1Decoder
+expand	branch1/mkf.py	/^    def expand(self):$/;"	m	class:YJ1Decoder
+expand	mkf.py	/^    def expand(self):$/;"	m	class:YJ1Decoder
+finishCurrentVideo	branch1/mkf.py	/^    def finishCurrentVideo(self):$/;"	m	class:RNG
+finishCurrentVideo	mkf.py	/^    def finishCurrentVideo(self):$/;"	m	class:RNG
+getColor	branch1/mkf.py	/^    def getColor(self, pIndex, cIndex):$/;"	m	class:Palettes
+getColor	mkf.py	/^    def getColor(self, pIndex, cIndex):$/;"	m	class:Palettes
+getCurrentFrame	branch1/mkf.py	/^    def getCurrentFrame(self):$/;"	m	class:RNG
+getCurrentFrame	mkf.py	/^    def getCurrentFrame(self):$/;"	m	class:RNG
+getFileCount	branch1/mkf.py	/^    def getFileCount(self):$/;"	m	class:MKFDecoder
+getFileCount	mkf.py	/^    def getFileCount(self):$/;"	m	class:MKFDecoder
+getFrameCount	branch1/mkf.py	/^    def getFrameCount(self):$/;"	m	class:RNG
+getFrameCount	mkf.py	/^    def getFrameCount(self):$/;"	m	class:RNG
+getImage	branch1/mkf.py	/^    def getImage(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
+getImage	branch1/mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:FBP
+getImage	branch1/mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:RLEDecoder
+getImage	mkf.py	/^    def getImage(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
+getImage	mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:FBP
+getImage	mkf.py	/^    def getImage(self, index, pIndex):$/;"	m	class:RLEDecoder
+getImageData	branch1/mkf.py	/^    def getImageData(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
+getImageData	branch1/mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:FBP
+getImageData	branch1/mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:SubPlace
+getImageData	branch1/mkf.py	/^    def getImageData(self, index, pIndex, offset = 8):$/;"	m	class:RLEDecoder
+getImageData	mkf.py	/^    def getImageData(self, fIndex, index, pIndex):$/;"	m	class:GOPLike
+getImageData	mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:FBP
+getImageData	mkf.py	/^    def getImageData(self, index, pIndex):$/;"	m	class:RLEDecoder
+getMap	branch1/mkf.py	/^    def getMap(self, index, pIndex):$/;"	m	class:MAP
+getMap	mkf.py	/^    def getMap(self, index, pIndex):$/;"	m	class:MAP
+getMapData	branch1/mkf.py	/^    def getMapData(self, index, pIndex):$/;"	m	class:MAP
+getMapData	mkf.py	/^    def getMapData(self, index, pIndex):$/;"	m	class:MAP
+getNextFrame	branch1/mkf.py	/^    def getNextFrame(self):$/;"	m	class:RNG
+getNextFrame	mkf.py	/^    def getNextFrame(self):$/;"	m	class:RNG
+getPalette	branch1/mkf.py	/^    def getPalette(self, index):$/;"	m	class:Palettes
+getPalette	mkf.py	/^    def getPalette(self, index):$/;"	m	class:Palettes
+getSize	branch1/mkf.py	/^    def getSize(self, index):$/;"	m	class:RLEDecoder
+getSize	branch1/mkf.py	/^    def getSize(self, index):$/;"	m	class:SubPlace
+getSize	mkf.py	/^    def getSize(self, index):$/;"	m	class:RLEDecoder
+get_instance	branch1/singleton.py	/^    def get_instance(*arg, **args):$/;"	f	function:singleton
+get_instance	singleton.py	/^    def get_instance(*arg, **args):$/;"	f	function:singleton
+get_topflag	branch1/mkf.py	/^    def get_topflag(self, x, y):$/;"	m	class:YJ1Decoder
+get_topflag	mkf.py	/^    def get_topflag(self, x, y):$/;"	m	class:YJ1Decoder
+hasNextFrame	branch1/mkf.py	/^    def hasNextFrame(self):$/;"	m	class:RNG
+hasNextFrame	mkf.py	/^    def hasNextFrame(self):$/;"	m	class:RNG
+ints	branch1/mkf.py	/^ints = re.compile('I+')$/;"	v
+isYJ1	branch1/mkf.py	/^    def isYJ1(self, index):$/;"	m	class:MKFDecoder
+isYJ1	mkf.py	/^    def isYJ1(self, index):$/;"	m	class:MKFDecoder
+move_top	branch1/mkf.py	/^    def move_top(self, x):$/;"	m	class:YJ1Decoder
+move_top	mkf.py	/^    def move_top(self, x):$/;"	m	class:YJ1Decoder
+next	branch1/mkf.py	/^    def next(self):$/;"	m	class:Data
+os	branch1/mkf.py	/^import os$/;"	i
+os	branch1/test.py	/^import os$/;"	i
+os	mkf.py	/^import os$/;"	i
+os	test.py	/^import os, sys, traceback$/;"	i
+pack	setup.py	/^from struct import unpack, pack$/;"	i
+play	branch1/mkf.py	/^    def play(self, index, ticks = 20):$/;"	m	class:Midi
+play	mkf.py	/^    def play(self, index, ticks = 20):$/;"	m	class:Midi
+play_midi_in_loop	branch1/test.py	/^def play_midi_in_loop():$/;"	f
+play_midi_in_loop	test.py	/^def play_midi_in_loop():$/;"	f
+psyco	test.py	/^        import psyco$/;"	i
+pygame	branch1/mkf.py	/^import pygame$/;"	i
+pygame	branch1/test.py	/^import pygame$/;"	i
+pygame	mkf.py	/^import pygame$/;"	i
+pygame	test.py	/^import pygame$/;"	i
+re	branch1/mkf.py	/^import re$/;"	i
+read	branch1/mkf.py	/^    def read(self, index):$/;"	m	class:MKFDecoder
+read	branch1/mkf.py	/^    def read(self, index):$/;"	m	class:SubPlace
+read	mkf.py	/^    def read(self, index):$/;"	m	class:MKFDecoder
+read	mkf.py	/^    def read(self, index):$/;"	m	class:SubPlace
+readByte	branch1/mkf.py	/^    def readByte(self):$/;"	m	class:RNG
+readByte	branch1/mkf.py	/^    def readByte(self, si = None):$/;"	m	class:YJ1Decoder
+readByte	mkf.py	/^    def readByte(self):$/;"	m	class:RNG
+readByte	mkf.py	/^    def readByte(self, si = None):$/;"	m	class:YJ1Decoder
+readInt	branch1/mkf.py	/^    def readInt(self, si = None):$/;"	m	class:YJ1Decoder
+readInt	mkf.py	/^    def readInt(self, si = None):$/;"	m	class:YJ1Decoder
+readShort	branch1/mkf.py	/^    def readShort(self):$/;"	m	class:RNG
+readShort	branch1/mkf.py	/^    def readShort(self, si = None):$/;"	m	class:YJ1Decoder
+readShort	mkf.py	/^    def readShort(self):$/;"	m	class:RNG
+readShort	mkf.py	/^    def readShort(self, si = None):$/;"	m	class:YJ1Decoder
+run	branch1/test.py	/^    def run(self):$/;"	m	class:MidiPlayer
+run	test.py	/^    def run(self):$/;"	m	class:MidiPlayer
+save	branch1/mkf.py	/^    def save(self, index, path):$/;"	m	class:Midi
+save	mkf.py	/^    def save(self, index, path):$/;"	m	class:Midi
+setByte	branch1/mkf.py	/^    def setByte(self):$/;"	m	class:RNG
+setByte	mkf.py	/^    def setByte(self):$/;"	m	class:RNG
+shorts	branch1/mkf.py	/^shorts = re.compile('H+')$/;"	v
+show_image_using_pygame	branch1/test.py	/^def show_image_using_pygame():$/;"	f
+show_image_using_pygame	test.py	/^def show_image_using_pygame():$/;"	f
+singleton	branch1/mkf.py	/^from singleton import singleton$/;"	i
+singleton	branch1/singleton.py	/^def singleton(cls):$/;"	f
+singleton	mkf.py	/^from singleton import singleton$/;"	i
+singleton	singleton.py	/^def singleton(cls):$/;"	f
+startVideo	branch1/mkf.py	/^    def startVideo(self, index, pIndex):$/;"	m	class:RNG
+startVideo	mkf.py	/^    def startVideo(self, index, pIndex):$/;"	m	class:RNG
+stop	branch1/mkf.py	/^    def stop(self, index):$/;"	m	class:Midi
+stop	mkf.py	/^    def stop(self, index):$/;"	m	class:Midi
+struct	branch1/mkf.py	/^import struct$/;"	i
+sys	test.py	/^import os, sys, traceback$/;"	i
+test	branch1/test.py	/^def test(func):$/;"	f
+test	test.py	/^def test(func):$/;"	f
+test_ABC	branch1/test.py	/^def test_ABC():$/;"	f
+test_ABC	test.py	/^def test_ABC():$/;"	f
+test_FBP	branch1/test.py	/^def test_FBP():$/;"	f
+test_FBP	test.py	/^def test_FBP():$/;"	f
+test_MGO	branch1/test.py	/^def test_MGO():$/;"	f
+test_MGO	test.py	/^def test_MGO():$/;"	f
+test_RNG	branch1/test.py	/^def test_RNG():$/;"	f
+test_RNG	test.py	/^def test_RNG():$/;"	f
+test_all	branch1/test.py	/^def test_all(show):$/;"	f
+test_all	test.py	/^def test_all(show):$/;"	f
+test_ball	branch1/test.py	/^def test_ball():$/;"	f
+test_ball	test.py	/^def test_ball():$/;"	f
+test_f	branch1/test.py	/^def test_f():$/;"	f
+test_f	test.py	/^def test_f():$/;"	f
+test_fire	branch1/test.py	/^def test_fire():$/;"	f
+test_fire	test.py	/^def test_fire():$/;"	f
+test_gop	branch1/test.py	/^def test_gop():$/;"	f
+test_gop	test.py	/^def test_gop():$/;"	f
+test_imageData	branch1/test.py	/^def test_imageData():$/;"	f
+test_imageData	test.py	/^def test_imageData():$/;"	f
+test_map	branch1/test.py	/^def test_map():$/;"	f
+test_map	test.py	/^def test_map():$/;"	f
+test_rgm	branch1/test.py	/^def test_rgm():$/;"	f
+test_rgm	test.py	/^def test_rgm():$/;"	f
+tolist	branch1/mkf.py	/^    def tolist(self):$/;"	m	class:Data
+traceback	test.py	/^import os, sys, traceback$/;"	i
+trans_topflag_to	branch1/mkf.py	/^    def trans_topflag_to(self, x, y, z, n):$/;"	m	class:YJ1Decoder
+trans_topflag_to	mkf.py	/^    def trans_topflag_to(self, x, y, z, n):$/;"	m	class:YJ1Decoder
+tt_abc	branch1/test.py	/^    def tt_abc(show):     $/;"	f	function:test_all
+tt_abc	test.py	/^    def tt_abc(show):     $/;"	f	function:test_all
+tt_ball	branch1/test.py	/^    def tt_ball(show):$/;"	f	function:test_all
+tt_ball	test.py	/^    def tt_ball(show):$/;"	f	function:test_all
+tt_f	branch1/test.py	/^    def tt_f(show):$/;"	f	function:test_all
+tt_f	test.py	/^    def tt_f(show):$/;"	f	function:test_all
+tt_fbp	branch1/test.py	/^    def tt_fbp(show):$/;"	f	function:test_all
+tt_fbp	test.py	/^    def tt_fbp(show):$/;"	f	function:test_all
+tt_fire	branch1/test.py	/^    def tt_fire(show):$/;"	f	function:test_all
+tt_fire	test.py	/^    def tt_fire(show):$/;"	f	function:test_all
+tt_gop	branch1/test.py	/^    def tt_gop(show):$/;"	f	function:test_all
+tt_gop	test.py	/^    def tt_gop(show):$/;"	f	function:test_all
+tt_mgo	branch1/test.py	/^    def tt_mgo(show):$/;"	f	function:test_all
+tt_mgo	test.py	/^    def tt_mgo(show):$/;"	f	function:test_all
+tt_midi	branch1/test.py	/^    def tt_midi(show):$/;"	f	function:test_all
+tt_midi	test.py	/^    def tt_midi(show):$/;"	f	function:test_all
+tt_rgm	branch1/test.py	/^    def tt_rgm(show):$/;"	f	function:test_all
+tt_rgm	test.py	/^    def tt_rgm(show):$/;"	f	function:test_all
+tt_rng	branch1/test.py	/^    def tt_rng(show):$/;"	f	function:test_all
+tt_rng	test.py	/^    def tt_rng(show):$/;"	f	function:test_all
+unpack	branch1/mkf.py	/^def unpack(tag, data):$/;"	f
+unpack	mkf.py	/^from struct import unpack$/;"	i
+unpack	setup.py	/^from struct import unpack, pack$/;"	i
+update	branch1/mkf.py	/^    def update(self, x):$/;"	m	class:YJ1Decoder
+update	mkf.py	/^    def update(self, x):$/;"	m	class:YJ1Decoder

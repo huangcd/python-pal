@@ -7,8 +7,7 @@ Created on 2010-7-21
 '''
 from threading import Thread
 from time import clock
-from mkf import Ball, RGM, Midi, GOPS, Fire, F, ABC, MGO, YJ1Decoder, FBP, RNG,\
-    MAP
+from mkf import Ball, RGM, Midi, GOPS, Fire, F, ABC, MGO, YJ1Decoder, FBP, RNG, MAP
 from setup import Setup
 import os, sys, traceback
 import pygame
@@ -22,6 +21,9 @@ def test(func):
         print 'total time used for %s: %fs' % (str(func), clock() - start)
     return __func
 
+@test
+def test_play():
+    pass
 
 class MidiPlayer(Thread):
     def __init__(self):
@@ -298,6 +300,6 @@ if __name__ == '__main__':
     except:
         print "fail to use psyco"
     os.chdir(r'..')
+    test_RNG()
     #test_all(0)
     test_setup()
-
