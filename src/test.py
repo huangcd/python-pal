@@ -139,7 +139,9 @@ def test_MGO():
 @test
 def debug_yj1():
     path = "D://programming//pypal//fire//11.dat"
-    with open(path, 'rb') as f: data = f.read()
+    f = open(path, 'rb')
+    data = f.read()
+    f.close()
     yj1 = YJ1Decoder()
     yj1.vec = []
     try:
@@ -201,8 +203,9 @@ def test_map():
             print '========================================='
             print sys.exc_info()
             img = obj.read(i)
-            with open(r'%s/%d.dat' % (path, i), 'wb') as f:
-                f.write(img)
+            f = open(r'%s/%d.dat' % (path, i), 'wb')
+            f.write(img)
+            f.close()
         
 @test
 def test_all(show):
@@ -212,7 +215,7 @@ def test_all(show):
         obj = ABC()
         img = obj.getImage(1, 0, 0)
         if show: img.show()
-    #tt_abc(show)
+    tt_abc(show)
     
     @test
     def tt_ball(show):
@@ -300,6 +303,6 @@ if __name__ == '__main__':
     except:
         print "fail to use psyco"
     os.chdir(r'..')
-    test_RNG()
-    #test_all(0)
+    #test_RNG()
+    test_all(1)
     test_setup()

@@ -31,22 +31,26 @@ class Setup:
         '''
         decode information from file SETUP.DAT
         '''
-        with open('SETUP.DAT', 'r') as handle:
-            content = handle.read()
-            self.key_leftup,    self.key_rightup,  self.key_rightdown, \
-            self.key_leftdown,  self.music,        self.sound,         \
-            self.irq,           self.io_port,      self.midi,          \
-            self.use_files_on_cd                                       \
-            = unpack(r'H' * 7 + 'H' * 3, content)
+        handle = open('SETUP.DAT', 'r')
+        #with open('SETUP.DAT', 'r') as handle:
+        content = handle.read()
+        self.key_leftup,    self.key_rightup,  self.key_rightdown, \
+        self.key_leftdown,  self.music,        self.sound,         \
+        self.irq,           self.io_port,      self.midi,          \
+        self.use_files_on_cd                                       \
+        = unpack(r'H' * 7 + 'H' * 3, content)
+        handle.close()
 
     def encode(self):
         '''
         encode information to file SETUP.DAT
         '''
-        with open('SETUP.DAT', 'w') as handle:
-            content = pack(r'H' * 7 + 'H' * 3,                         \
-            self.key_leftup,    self.key_rightup,  self.key_rightdown, \
-            self.key_leftdown,  self.music,        self.sound,         \
-            self.irq,           self.io_port,      self.midi,          \
-            self.use_files_on_cd                                       )
-            handle.write(content)
+        handle = open('SETUP.DAT', 'w')
+        #with open('SETUP.DAT', 'w') as handle:
+        content = pack(r'H' * 7 + 'H' * 3,                         \
+        self.key_leftup,    self.key_rightup,  self.key_rightdown, \
+        self.key_leftdown,  self.music,        self.sound,         \
+        self.irq,           self.io_port,      self.midi,          \
+        self.use_files_on_cd                                       )
+        handle.write(content)
+        handle.close()
