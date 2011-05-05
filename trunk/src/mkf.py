@@ -8,7 +8,7 @@ Created on 2010-7-19
 
 import os
 import pygame
-from singleton import singleton
+#from singleton import singleton
 from struct import unpack
 from PIL import Image, ImageDraw
 
@@ -58,7 +58,7 @@ class MKFDecoder:
             self.indexes = []
             self.cache = {}
             for i in xrange(self.count):
-                index = unpack('I', self.content[(i) << 2: (i + 1) << 2])[0]
+                index = unpack('I', self.content[i << 2: (i + 1) << 2])[0]
                 self.indexes.append(index)
             # 减去最后一个偏移量，对外而言，count就表示mkf文件中的子文件个数
             self.count -= 1
@@ -93,7 +93,7 @@ class MKFDecoder:
             self.cache[index] = data
         return self.cache[index]
 
-@singleton
+#@singleton
 class YJ1Decoder:
     '''
     YJ_1文件解析
@@ -149,7 +149,7 @@ class YJ1Decoder:
             ext_length = self.readShort()
             pack_length = self.readShort()
 
-            if pack_length == 0:
+            if not pack_length:
                 pack_length = ext_length + 4
                 for _ in xrange(ext_length):
                     self.finalData[self.di] = self.data[self.si]
@@ -434,7 +434,7 @@ class RLEDecoder(MKFDecoder):
             x = 0
         return img
 
-@singleton
+#@singleton
 class Midi(MKFDecoder):
     '''
     midi.mkf文件解码和midi音乐播放
@@ -447,8 +447,10 @@ class Midi(MKFDecoder):
         pygame.mixer.init()
 
     def save(self, index, path):
-        with open(path, 'wb') as f:
-            f.write(self.read(index))
+        f = open(path, 'wb')
+        #with open(path, 'wb') as f:
+        f.write(self.read(index))
+        f.close()
 
     def play(self, index, ticks = 20):
         '''
@@ -467,7 +469,7 @@ class Midi(MKFDecoder):
     def stop(self, index):
         pygame.mixer.music.stop()
 
-@singleton
+#@singleton
 class Ball(RLEDecoder):
     '''
     物品图片档，经过MKF解开后，每个子文件是标准的RLE图片（ball.mfk）
@@ -475,7 +477,7 @@ class Ball(RLEDecoder):
     def __init__(self):
         RLEDecoder.__init__(self, 'ball.mkf')
 
-@singleton
+#@singleton
 class RGM(RLEDecoder):
     '''
     人物头像档，经过MKF解开后，每个子文件是标准的RLE图片（RGM.mkf）
@@ -544,7 +546,7 @@ class GOPLike(MKFDecoder):
         return self.subPlaces[fIndex].getImageData(index, pIndex)
 
 
-@singleton
+#@singleton
 class GOPS(GOPLike):
     '''
     图元集，GOP属于子包结构，其中有226个图元包,其内每个图元均为RLE，形状是菱形，而且其大小为32*15像素
@@ -553,7 +555,7 @@ class GOPS(GOPLike):
     def __init__(self):
         GOPLike.__init__(self, 'gop.mkf')
 
-@singleton
+#@singleton
 class Fire(GOPLike):
     '''
     法术效果图，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（FIRE.mkf）
@@ -561,7 +563,7 @@ class Fire(GOPLike):
     def __init__(self):
         GOPLike.__init__(self, 'fire.mkf')
 
-@singleton
+#@singleton
 class F(GOPLike):
     '''
     我战斗形象，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（F.mkf）
@@ -569,7 +571,7 @@ class F(GOPLike):
     def __init__(self):
         GOPLike.__init__(self, 'f.mkf')
         
-@singleton
+#@singleton
 class ABC(GOPLike):
     '''
     敌战斗形象，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（ABC.mkf）
@@ -577,7 +579,7 @@ class ABC(GOPLike):
     def __init__(self):
         GOPLike.__init__(self, 'abc.mkf')
         
-@singleton
+#@singleton
 class MGO(GOPLike):
     '''
     各种人物形象，同GOP有着同样的存储方式，但图元包经过YJ_1压缩（MGO.mkf）
@@ -585,7 +587,7 @@ class MGO(GOPLike):
     def __init__(self):
         GOPLike.__init__(self, 'mgo.mkf')
         
-@singleton
+#@singleton
 class FBP(MKFDecoder):
     '''
     背景图，经过MKF解开后，每个子文件必须经过DEYJ1解压，
@@ -619,7 +621,7 @@ class FBP(MKFDecoder):
                 dr.point((x, y), palette[data[x + y * width]])
         return img
 
-@singleton
+#@singleton
 class RNG(MKFDecoder):
     '''
     过场动画（RNG.mkf）
@@ -802,7 +804,7 @@ class RNG(MKFDecoder):
     def getCurrentFrame(self):
         return self.image
 
-@singleton
+#@singleton
 class MAP(MKFDecoder):
     '''
     地图档（MAP.mkf）
@@ -883,7 +885,7 @@ class MAP(MKFDecoder):
                                 img[y + shiftY][x + shiftX] = fg[y][x]
         return img
 
-@singleton
+#@singleton
 class Palettes: 
     '''
     pat.mkf文件不同于其它.mkf文件，其文件的组织结构为从0x28开始，每768字节构成一个子文件，
